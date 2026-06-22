@@ -45,7 +45,7 @@ export async function loginWithEmail(email, password) {
 export async function loginWithGoogle() {
   const provider = new GoogleAuthProvider();
   const result = await signInWithPopup(auth, provider);
-  await createUserDoc(result.createUserDoc);
+  await createUserDoc(result.user);
   return result.user;
 }
 
@@ -57,7 +57,7 @@ export async function logout() {
 //password reset
 export async function resetPassword(email) {
   await sendPasswordResetEmail(auth, email, {
-    url: "http://localhost:5173/login",
+    url: window.location.origin + "/login",
     handleCodeInApp: false,
   });
 }

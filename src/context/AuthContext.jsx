@@ -13,14 +13,21 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (FirebaseUser) => {
-      if (FirebaseUser) {
-        const ref = doc(db, "user", FirebaseUser.uid);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setUserRole(snap.data().role);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        try {
+          const ref = doc(db, "users", firebaseUser.uid);
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            setUserRole(snap.data().role);
+          } else {
+            setUserRole("visitor");
+          }
+        } catch (err) {
+          console.error("error fetching user role:", err);
+          setUserRole("visitor");
         }
-        setUser(FirebaseUser);
+        setUser(firebaseUser);
       } else {
         setUser(null);
         setUserRole(null);

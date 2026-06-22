@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerWithEmail, loginWithGoogle } from "../services/auth";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/;
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 
 export default function Signup() {
   const navigate = useNavigate();

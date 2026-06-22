@@ -31,7 +31,7 @@ export default function App() {
 
           {/*Protected- any logged in user*/}
           <Route
-            path="/accunt"
+            path="/account"
             element={
               <ProtectedRoute>
                 <Account />
@@ -43,7 +43,7 @@ export default function App() {
           <Route
             path="/organizer"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="organizer">
                 <Organizer />
               </ProtectedRoute>
             }
@@ -53,7 +53,7 @@ export default function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <Admin />
               </ProtectedRoute>
             }
