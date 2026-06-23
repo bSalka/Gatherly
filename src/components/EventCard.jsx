@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-function formatDate(timestamp) {
+/* function formatDate(timestamp) {
   if (!timestamp) return "";
   const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
   return date.toLocaleDateString("bs-BA", {
@@ -7,6 +7,29 @@ function formatDate(timestamp) {
     month: "short",
     year: "numeric",
   });
+} */
+
+function formatDate(timestamp) {
+  if (!timestamp) return "";
+
+  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+
+  const months = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "maj",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "okt",
+    "nov",
+    "dec",
+  ];
+
+  return `${date.getDate()}. ${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 function formatPrice(price) {
@@ -72,7 +95,7 @@ export default function EventCard({ event }) {
       <div className="p-4 flex flex-col flex-1">
         <h3
           className="font-semibold text-gray-900 text-sm leading-snug
-        mb-2 line-clamp-2 ggroup-hover:text-blue-600 transition-colors"
+        mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors"
         >
           {event.title}
         </h3>
