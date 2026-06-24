@@ -1,13 +1,4 @@
 import { Link } from "react-router-dom";
-/* function formatDate(timestamp) {
-  if (!timestamp) return "";
-  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-  return date.toLocaleDateString("bs-BA", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-} */
 
 function formatDate(timestamp) {
   if (!timestamp) return "";
