@@ -6,6 +6,10 @@ import {
   query,
   where,
   orderBy,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -43,4 +47,44 @@ export async function getEventById(id) {
   const snap = await getDoc(doc(db, "events", id));
   if (!snap.exists()) return null;
   return { id: snap.id, ...snap.data() };
+}
+
+//get EVENTS by organizer
+export async function getOrganizerEvents(organizerId) {
+  const q = query(
+    collection(db, "events"),
+    where("organizerId", "==", organizerId),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  }));
+}
+
+//create new event
+export async function createEvent(eventData, user) {
+  const ref = await addDoc(collection(db, "events"), {
+    ...eventData,
+    organizerId: user.uid,
+    organizerName: user.displayName || user.email,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+//update event
+export async function updateEvent(eventId, eventData) {
+  const ref = doc(db, "events", eventId);
+  await updateDoc(ref, {
+    ...eventData,
+    updateAr: serverTimestamp(),
+  });
+}
+
+//delete event
+export async function deleteEvent(eventId) {
+  await deleteDoc(doc(db, "events", eventId));
 }

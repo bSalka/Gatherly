@@ -27,7 +27,7 @@ export default function Login() {
     try {
       setLoading(true);
       await loginWithEmail(form.email, form.password);
-      navigate(from, { replace: true });
+      navigate(from || "/", { replace: true });
     } catch (err) {
       switch (err.code) {
         case "auth/user-not-found":
@@ -60,7 +60,7 @@ export default function Login() {
     try {
       setLoading(true);
       await loginWithGoogle();
-      navigate(from, { replace: true });
+      navigate(from || "/", { replace: true });
     } catch (err) {
       setError("Google prijava nije uspjela. Pokušajte ponovo.");
     } finally {

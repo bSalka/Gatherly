@@ -49,7 +49,7 @@ export default function Signup() {
       setForm(initialForm);
       setSuccess(true);
 
-      setTimeout(() => navigate("/"), 2000);
+      setTimeout(() => navigate("/"));
     } catch (err) {
       if (err.code === "auth/email-already-in-use") {
         setError("Račun sa ovom email adrsom već postoji.");

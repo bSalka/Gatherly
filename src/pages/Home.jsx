@@ -46,7 +46,7 @@ export default function Home() {
     <div>
       {/*Hero section */}
       <section
-        className="bg-gradient-to-br from-blue-600 via-blue-700
+        className="bg-linear-to-br from-blue-600 via-blue-700
     to-indigo-800 text-white"
       >
         <div className="max-w-6xl mx-auto px-4 py-20 md:py-28">

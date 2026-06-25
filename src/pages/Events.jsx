@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import EventCard from "../components/EventCard";
 import EventCardSkeleton from "../components/EventCardSkeleton";
 import { getEvents } from "../services/events";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 const CATEGORIES = [
   { value: "", label: "Sve kategorije" },
@@ -18,15 +18,14 @@ export default function Events() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  //filters
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
+  const [SearchParams] = useSearchParams();
 
   useEffect(() => {
-    const s = useSearchParams.get("search");
-    const c = useSearchParams.get("category");
+    const s = SearchParams.get("search");
+    const c = SearchParams.get("category");
     if (s) setSearch(s);
     if (c) setCategory(c);
   }, []);

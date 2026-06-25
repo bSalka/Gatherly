@@ -11,7 +11,7 @@ export default function ProtectedRoute({ children, requiredRole = null }) {
   }
 
   //logged in wrong role- send home
-  if (requiredRole && useerRole !== requiredRole) {
+  if (requiredRole && userRole !== requiredRole) {
     return <Navigate to="/" replace />;
   }
 
