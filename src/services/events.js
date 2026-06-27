@@ -10,6 +10,7 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -80,11 +81,48 @@ export async function updateEvent(eventId, eventData) {
   const ref = doc(db, "events", eventId);
   await updateDoc(ref, {
     ...eventData,
-    updateAr: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   });
 }
 
 //delete event
 export async function deleteEvent(eventId) {
   await deleteDoc(doc(db, "events", eventId));
+}
+
+//get ticket tiers for event
+export async function getTicketTiers(eventId) {
+  const q = query(
+    collection(db, "events", eventId, "tickets"),
+    orderBy("createdAt", "asc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+//save ticket tiers for an event(
+export async function saveTicketTiers(eventId, tiers) {
+  const batch = writeBatch(db);
+
+  //delete existing tiers
+  const existing = await getTicketTiers(eventId);
+  existing.forEach((tier) => {
+    const ref = doc(db, "events", eventId, "tickets", tier.id);
+    batch.delete(ref);
+  });
+
+  //add new tiers
+  tiers.forEach((tier) => {
+    const ref = doc(collection(db, "events", eventId, "tickets"));
+    batch.set(ref, {
+      name: tier.name,
+      price: Number(tier.price),
+      quantity: Number(tier.quantity),
+      sold: 0,
+      description: tier.description || "",
+      createdAt: serverTimestamp(),
+    });
+  });
+
+  await batch.commit();
 }

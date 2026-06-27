@@ -2,17 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getEventById } from "../services/events";
 import { useAuth } from "../context/AuthContext";
-
-/* function formatDate(timestamp) {
-  if (!timestamp) return "";
-  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-  return date.toLocaleDateString("bs-BA", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-} */
+import { getTicketTiers } from "../services/events";
 
 function formatDate(timestamp) {
   if (!timestamp) return "";
@@ -68,6 +58,8 @@ export default function EventDetail() {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [tiers, setTiers] = useState([]);
+  const [selectedTier, setSelectedTier] = useState(null);
 
   useEffect(() => {
     async function fetchEvent() {
@@ -79,6 +71,8 @@ export default function EventDetail() {
           return;
         }
         setEvent(data);
+        const tierData = await getTicketTiers(id);
+        setTiers(tierData);
       } catch (err) {
         console.error(err);
         setError("Greška pri učitavanju događaja.");
@@ -144,8 +138,14 @@ export default function EventDetail() {
       navigate("/login", { state: { from: `/events/${id}` } });
       return;
     }
+    if (tiers.length > 0 && !selectedTier) {
+      alert("Molimo odaberite vrstu karte.");
+      return;
+    }
     //dodati stripe
-    alert("Kupovina karata-soooon");
+    alert(
+      `Odabrana karta: ${selectedTier.name || "Standardna"} Kupovina karata-soooon`,
+    );
   }
 
   //loading skeleton
@@ -258,7 +258,7 @@ export default function EventDetail() {
             <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-3">
               <div
                 className="w-8 h-8 bg-blue-100 rounded-lg flex items-center
-                justify-center flex-shrink-0"
+                justify-center shrink-0"
               >
                 <svg
                   className="w-4 h-4 text-blue-600"
@@ -289,7 +289,7 @@ export default function EventDetail() {
             <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-3">
               <div
                 className="w-8 h-8 bg-green-100 rounded-lg flex items-center
-                justify-center flex-shrink-0"
+                justify-center shrink-0"
               >
                 <svg
                   className="w-4 h-4 text-green-600"
@@ -326,7 +326,7 @@ export default function EventDetail() {
             <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-3">
               <div
                 className="w-8 h-8 bg-purple-100 rounded-lg flex items-center
-                justify-center flex-shrink-0"
+                justify-center shrink-0"
               >
                 <svg
                   className="w-4 h-4 text-purple-600"
@@ -410,24 +410,80 @@ export default function EventDetail() {
         </div>
 
         {/*Sidebar ticket */}
-        <div className="lg:w-72 flex-shrink-0">
+        <div className="lg:w-72 shrink-0">
           <div
             className="bg-white border border-gray-200 rounded-2xl p-5
              sticky top-24"
           >
             <h3 className="font-semibold text-gray-900 mb-4">Kupite kartu</h3>
 
-            <div className="border border-gray-200 rounded-xl p-4 mb-4">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-gray-800">
-                  Standardna karta
-                </span>
-                <span className="text-sm font-bold text-blue-600">
-                  {formatPrice(event.price)}
-                </span>
+            {tiers.length > 0 ? (
+              <div className="space-y-3 mb-4">
+                {tiers.map((tier) => {
+                  const available = tier.quantity - (tier.sold || 0);
+                  const soldOut = available <= 0;
+                  const isSelected = selectTier?.id === tier.id;
+                  return (
+                    <button
+                      key={tier.id}
+                      type="button"
+                      disabled={soldOut}
+                      onClick={() => !soldOut && setSelectedTier(tier)}
+                      className={`w-full text-left border rounded-xl p-3 
+                         transition-all duration-150
+                             ${
+                               soldOut
+                                 ? "border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed"
+                                 : isSelected
+                                   ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200"
+                                   : "border-gray-200 hover:border-blue-300 cursor-pointer"
+                             }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-gray-800">
+                          {tier.name}
+                        </span>
+                        <span className="text-sm font-bold text-blue-600">
+                          {tier.price === 0 ? "Besplatno" : `${tier.price} KM`}
+                        </span>
+                      </div>
+                      {tier.description && (
+                        <p className="text-xs text-gray-400 mb-1">
+                          {tier.description}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <p
+                          className={`text-xs font-medium ${
+                            soldOut ? "text-red-500" : "text-green-600"
+                          }`}
+                        >
+                          {soldOut ? "Rasprodano" : `${available} dostupno`}
+                        </p>
+                        {isSelected && (
+                          <span className="text-xs text-blue-600 font-medium">
+                            {" "}
+                            Odabrano{" "}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
-              <p className="text-xs text-gray-400">Ulaz na događaj</p>
-            </div>
+            ) : (
+              <div className="border border-gray-200 rounded-xl p-4 mb-4">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm font-medium text-gray-800">
+                    Standardna karta
+                  </span>
+                  <span className="text-sm font-bold text-blue-600">
+                    {formatPrice(event.price)}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400">Ulaz na događaj</p>
+              </div>
+            )}
 
             {/*Buy btn */}
             <button
@@ -435,7 +491,11 @@ export default function EventDetail() {
               className="w-full bg-blue-600 text-white py-3 rounded-xl
           font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors text-sm"
             >
-              {isLoggedIn ? "Kupi kartu" : "Prijavi se za kupovinu"}
+              {isLoggedIn
+                ? selectedTier
+                  ? `Kupi - ${selectedTier.price === 0 ? "Besplatno" : `${selectedTier.price} KM`}`
+                  : "Odaberite kartu"
+                : "Prijavi se za kupovinu"}
             </button>
 
             {/*Hint za login */}

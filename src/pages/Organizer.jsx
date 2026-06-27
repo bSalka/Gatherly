@@ -5,7 +5,10 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
+  getTicketTiers,
+  saveTicketTiers,
 } from "../services/events";
+import TicketTierManager from "../components/TicketTierManager";
 
 const CATEGORIES = [
   { value: "music", label: " Muzika" },
@@ -21,10 +24,11 @@ const emptyForm = {
   description: "",
   category: "",
   city: "",
-  price: "",
+  address: "",
   bannerURL: "",
   startDate: "",
   endDate: "",
+  tiers: [],
 };
 
 function formatDate(timestamp) {
@@ -92,7 +96,7 @@ export default function Organizer() {
     setShowForm(true);
   }
 
-  function openEdit(event) {
+  async function openEdit(event) {
     setEditingEvent(event);
 
     //firestore timestamp to local datetime format
@@ -101,16 +105,20 @@ export default function Organizer() {
       const d = ts.toDate ? ts.toDate() : new Date(ts);
       return d.toISOString().slice(0, 16);
     };
+    const existingTiers = await getTicketTiers(event.id);
+
     setForm({
       title: event.title || "",
       description: event.description || "",
       category: event.category || "music",
       city: event.city || "",
-      price: event.price || "",
+      address: event.address || "",
       bannerURL: event.bannerURL || "",
       startDate: toInput(event.startDate),
       endDate: toInput(event.endDate),
+      tiers: existingTiers,
     });
+
     setError("");
     setSuccess("");
     setShowForm(true);
@@ -127,34 +135,47 @@ export default function Organizer() {
     e.preventDefault();
     setError("");
 
-    //validacija
     if (!form.title.trim()) return setError("Naslov je obavezan.");
     if (!form.description.trim()) return setError("opis je obavezan.");
     if (!form.city.trim()) return setError("Grad je obavezan.");
     if (!form.startDate) return setError("Datum početka je obavezan.");
-    if (form.price === "")
-      return setError("Cijena je obavezna (0 za besplatno).");
+
+    //validate tiers
+    const validTiers = form.tiers.filter(
+      (t) => t.name && t.price !== "" && t.quantity,
+    );
+
+    const price =
+      validTiers.length > 0
+        ? Math.min(...validTiers.map((t) => Number(t.price)))
+        : 0;
 
     const eventData = {
       title: form.title.trim(),
       description: form.description.trim(),
       category: form.category,
       city: form.city.trim(),
-      price: Number(form.price),
+      address: form.address.trim(),
       bannerURL: form.bannerURL.trim(),
       startDate: new Date(form.startDate),
       endDate: form.endDate ? new Date(form.endDate) : null,
+      price,
     };
 
     try {
       setSubmitting(true);
+      let eventId;
       if (editingEvent) {
         await updateEvent(editingEvent.id, eventData);
+        eventId = editingEvent.id;
         setSuccess("Događaj uspješno ažuriran");
       } else {
-        await createEvent(eventData, user);
+        eventId = await createEvent(eventData, user);
         setSuccess("Događaj kreiran! Čeka odobrenje admina.");
       }
+
+      await saveTicketTiers(eventId, validTiers);
+
       await fetchEvents();
       setTimeout(() => {
         closeForm();
@@ -376,6 +397,24 @@ export default function Organizer() {
                 </div>
               </div>
 
+              {/*address */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Adresa mjesta održavanja
+                </label>
+                <input
+                  name="address"
+                  value={form.address}
+                  onChange={handleChange}
+                  placeholder="npr. Ferhadija 1, Sarajevo"
+                  disabled={submitting}
+                  className="w-full border border-gray-300 rounded-xl px-4
+                             py-2.5 text-sm focus:outline-none focus:ring-2
+                             focus:ring-blue-500 disabled:bg-gray-50"
+                />
+              </div>
+
+              {/*Start & end date */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -410,26 +449,6 @@ export default function Organizer() {
                 </div>
               </div>
 
-              {/*Price */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Cijena (KM) * - unesite 0 (nulu) za besplatan događaj
-                </label>
-                <input
-                  name="price"
-                  type="number"
-                  min="0"
-                  step="0.50"
-                  value={form.price}
-                  onChange={handleChange}
-                  placeholder="0"
-                  disabled={submitting}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5
-                  text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 
-                  focus:border-transparent disabled:bg-gray-50"
-                />
-              </div>
-
               {/*Banneer URL */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -455,6 +474,17 @@ export default function Organizer() {
                     className="mt-2 h-24 w-full object-cover rounded-lg"
                   />
                 )}
+              </div>
+
+              {/*Ticket tiers */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Vrste karata
+                </label>
+                <TicketTierManager
+                  tiers={form.tiers}
+                  onChange={(tiers) => setForm({ ...form, tiers })}
+                />
               </div>
 
               {/*Submit */}
