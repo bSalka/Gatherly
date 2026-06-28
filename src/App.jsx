@@ -13,6 +13,7 @@ import Account from "./pages/Account";
 import Organizer from "./pages/Organizer";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import BookingConfirmation from "./pages/BookingConfirmation";
 
 export default function App() {
   return (
@@ -55,6 +56,15 @@ export default function App() {
             element={
               <ProtectedRoute requiredRole="admin">
                 <Admin />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/booking/:bookingId"
+            element={
+              <ProtectedRoute>
+                <BookingConfirmation />
               </ProtectedRoute>
             }
           />

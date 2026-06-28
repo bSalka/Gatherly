@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getEventById } from "../services/events";
+import {
+  getEventById,
+  getTicketTiers,
+  createBooking,
+} from "../services/events";
 import { useAuth } from "../context/AuthContext";
-import { getTicketTiers } from "../services/events";
 
 function formatDate(timestamp) {
   if (!timestamp) return "";
@@ -53,13 +56,16 @@ const CATEGORY_LABELS = {
 export default function EventDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
 
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tiers, setTiers] = useState([]);
   const [selectedTier, setSelectedTier] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [booking, setBooking] = useState(false);
+  const [bookingError, setBookingError] = useState("");
 
   useEffect(() => {
     async function fetchEvent() {
@@ -73,6 +79,10 @@ export default function EventDetail() {
         setEvent(data);
         const tierData = await getTicketTiers(id);
         setTiers(tierData);
+        const firstAvailable = tierData.find(
+          (t) => t.quantity - (t.sold || 0) > 0,
+        );
+        if (firstAvailable) setSelectedTier(firstAvailable);
       } catch (err) {
         console.error(err);
         setError("Greška pri učitavanju događaja.");
@@ -106,7 +116,7 @@ export default function EventDetail() {
       `DTSTART:${fmt(start)}`,
       `DTEND:${fmt(end)}`,
       `DESCRIPTION:${event.description || ""}`,
-      `LOCATION:${event.venue?.address || event.city || ""}`,
+      `LOCATION:${event.address || event.city || ""}`,
       "END:VEVENT",
       "END:VCALENDAR",
     ].join("\n");
@@ -133,19 +143,57 @@ export default function EventDetail() {
     }
   }
 
-  function handleBuyTicket() {
+  async function handleBuyTicket() {
     if (!isLoggedIn) {
       navigate("/login", { state: { from: `/events/${id}` } });
       return;
     }
-    if (tiers.length > 0 && !selectedTier) {
-      alert("Molimo odaberite vrstu karte.");
+    //free events
+    if (tiers.length === 0) {
+      try {
+        setBooking(true);
+        setBookingError("");
+        const freeTier = { id: "free", name: "Besplatan ulaz", price: 0 };
+        const bookingId = await createBooking({
+          user,
+          event,
+          tier: freeTier,
+          quantity: 1,
+        });
+        navigate(`/booking/${bookingId}`);
+      } catch (err) {
+        setBookingError(err.message || "Greška pri rezervaciji.");
+      } finally {
+        setBooking(false);
+      }
+    }
+
+    if (!selectedTier) {
+      setBookingError("Molimo odaberite vrsti karte.");
       return;
     }
-    //dodati stripe
-    alert(
-      `Odabrana karta: ${selectedTier.name || "Standardna"} Kupovina karata-soooon`,
-    );
+
+    const available = selectedTier.quantity - (selectedTier.sold || 0);
+    if (quantity > available) {
+      setBookingError(`Dostupno samo ${available} karata.`);
+      return;
+    }
+    try {
+      setBooking(true);
+      setBookingError("");
+      const bookingId = await createBooking({
+        user,
+        event,
+        tier: selectedTier,
+        quantity,
+      });
+
+      navigate(`/booking/${bookingId}`);
+    } catch (err) {
+      setBookingError(err.message || "Greška pri kupovini. Pokušajte ponovo.");
+    } finally {
+      setBooking(false);
+    }
   }
 
   //loading skeleton
@@ -197,7 +245,7 @@ export default function EventDetail() {
             d="M15 19l-7-7 7-7"
           />
         </svg>
-        Nazad na događaj
+        Nazad na događaje
       </Link>
 
       {/*Banner */}
@@ -314,11 +362,9 @@ export default function EventDetail() {
               <div>
                 <p className="text-xs text-gray-400 mb-0.5">Lokacija</p>
                 <p className="text-sm font-medium text-gray-800">
-                  {event.venue?.name || event.city}
+                  {event.city}
                 </p>
-                <p className="text-xs text-gray-500">
-                  {event.venue?.address || ""}
-                </p>
+                <p className="text-xs text-gray-500">{event.address || ""}</p>
               </div>
             </div>
 
@@ -343,7 +389,9 @@ export default function EventDetail() {
                 </svg>
               </div>
               <div>
-                <p className="text-xs text-gray-400 mb-0.5">Cijena</p>
+                <p className="text-xs text-gray-400 mb-0.5">
+                  {tiers.length > 0 ? "Cijena od" : "Cijena"}
+                </p>
                 <p className="text-sm font-medium text-gray-800">
                   {formatPrice(event.price)}
                 </p>
@@ -415,20 +463,46 @@ export default function EventDetail() {
             className="bg-white border border-gray-200 rounded-2xl p-5
              sticky top-24"
           >
-            <h3 className="font-semibold text-gray-900 mb-4">Kupite kartu</h3>
+            <h3 className="font-semibold text-gray-900 mb-4">
+              {tiers.length === 0 ? "Besplatan ulaz" : "Kupite kartu"}
+            </h3>
 
-            {tiers.length > 0 ? (
+            {bookingError && (
+              <div
+                className="bg-red-50 border border-red-200 text-red-600
+              rounded-lg px-3 py-2 text-xs mb-4"
+              >
+                {bookingError}
+              </div>
+            )}
+
+            {tiers.length === 0 && (
+              <div
+                className="bg-green-50 border-50 border-green-200
+              rounded-xl p-3 mb-4 text-sm text-green-700"
+              >
+                Ovaj događaj je besplatan - samo se prijavite!
+              </div>
+            )}
+
+            {tiers.length > 0 && (
               <div className="space-y-3 mb-4">
                 {tiers.map((tier) => {
                   const available = tier.quantity - (tier.sold || 0);
                   const soldOut = available <= 0;
-                  const isSelected = selectTier?.id === tier.id;
+                  const isSelected = selectedTier?.id === tier.id;
                   return (
                     <button
                       key={tier.id}
                       type="button"
                       disabled={soldOut}
-                      onClick={() => !soldOut && setSelectedTier(tier)}
+                      onClick={() => {
+                        if (!soldOut) {
+                          setSelectedTier(tier);
+                          setQuantity(1);
+                          setBookingError("");
+                        }
+                      }}
                       className={`w-full text-left border rounded-xl p-3 
                          transition-all duration-150
                              ${
@@ -462,8 +536,7 @@ export default function EventDetail() {
                         </p>
                         {isSelected && (
                           <span className="text-xs text-blue-600 font-medium">
-                            {" "}
-                            Odabrano{" "}
+                            Odabrano
                           </span>
                         )}
                       </div>
@@ -471,44 +544,104 @@ export default function EventDetail() {
                   );
                 })}
               </div>
-            ) : (
-              <div className="border border-gray-200 rounded-xl p-4 mb-4">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-800">
-                    Standardna karta
+            )}
+
+            {tiers.length > 0 && selectedTier && (
+              <div className="mb-4">
+                <label className="block text-xs text-gray-500 mb-1.5">
+                  Količina
+                </label>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-8 h-8 rounded-lg border border-gray-300 flex
+                  items-center justify-center text-gray-600 hover:bg-gray-50
+                  transition-colors"
+                  >
+                    -
+                  </button>
+                  <span className="text-s, font-semibold text-gray-900 w-6 text-center">
+                    {quantity}
                   </span>
-                  <span className="text-sm font-bold text-blue-600">
-                    {formatPrice(event.price)}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const available =
+                        selectedTier.quantity - (selectedTier.sold || 0);
+                      setQuantity(Math.min(available, quantity + 1));
+                    }}
+                    className="w-8 h-8 rounded-lg border border-gray-300
+                   flex items-center justify-center text-gray-600
+                 hover:bg-gray-50 transition-colors"
+                  >
+                    +
+                  </button>
+                  <span className="text-xs text-gray-400 ml-1">
+                    max{selectedTier.quantity - (selectedTier.sold || 0)}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400">Ulaz na događaj</p>
+              </div>
+            )}
+
+            {/*Total price row */}
+            {selectedTier && selectedTier.price > 0 && (
+              <div
+                className="flex items-center justify-between mb-4 pt-3
+              border-t border-gray-100"
+              >
+                <span className="text-sm text-gray-600">Ukupno</span>
+                <span className="text-base font-bold text-gray-900">
+                  {selectedTier.price * quantity}KM
+                </span>
               </div>
             )}
 
             {/*Buy btn */}
             <button
               onClick={handleBuyTicket}
+              disabled={booking}
               className="w-full bg-blue-600 text-white py-3 rounded-xl
-          font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors text-sm"
+              font-medium hover:bg-blue-700 active:bg-blue-800 transition-colors text-sm"
             >
-              {isLoggedIn
-                ? selectedTier
-                  ? `Kupi - ${selectedTier.price === 0 ? "Besplatno" : `${selectedTier.price} KM`}`
-                  : "Odaberite kartu"
-                : "Prijavi se za kupovinu"}
+              {booking ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    />
+                  </svg>
+                  Obrađuje se...
+                </span>
+              ) : !isLoggedIn ? (
+                "Prijavi se za kupovinu"
+              ) : tiers.length === 0 ? (
+                "Prijavi se besplatno"
+              ) : selectedTier ? (
+                `Kupi ${quantity} × ${selectedTier.name}`
+              ) : (
+                "Odaberite kartu"
+              )}
             </button>
 
             {/*Hint za login */}
             {!isLoggedIn && (
               <p className="text-sm text-gray-400 text-center mt-2">
                 Potrebna je prijava za kupovinu karata.
-              </p>
-            )}
-
-            {/*Free events */}
-            {event.price === 0 && (
-              <p className="text-xs text-green-600 text-center mt-2 font-medium">
-                Ovaj događaj je besplatan
               </p>
             )}
           </div>

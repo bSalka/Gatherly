@@ -11,6 +11,7 @@ import {
   deleteDoc,
   serverTimestamp,
   writeBatch,
+  runTransaction,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -125,4 +126,83 @@ export async function saveTicketTiers(eventId, tiers) {
   });
 
   await batch.commit();
+}
+
+//booking using transactiion to prevent overselling
+export async function createBooking({ user, event, tier, quantity }) {
+  const bookingRef = doc(collection(db, "bookings"));
+
+  // Free event — no tier to decrement
+  if (tier.id === "free") {
+    await runTransaction(db, async (transaction) => {
+      transaction.set(bookingRef, {
+        userId: user.uid,
+        userEmail: user.email,
+        userName: user.displayName || user.email,
+        eventId: event.id,
+        eventTitle: event.title,
+        eventCity: event.city,
+        eventAddress: event.address || "",
+        eventStart: event.startDate,
+        tierId: "free",
+        tierName: "Besplatan ulaz",
+        tierPrice: 0,
+        quantity: 1,
+        totalPrice: 0,
+        status: "confirmed",
+        createdAt: serverTimestamp(),
+      });
+    });
+    return bookingRef.id;
+  }
+
+  // Paid event — decrement stock
+  const tierRef = doc(db, "events", event.id, "tickets", tier.id);
+
+  await runTransaction(db, async (transaction) => {
+    const tierSnap = await transaction.get(tierRef);
+    if (!tierSnap.exists()) throw new Error("Karta ne postoji.");
+
+    const tierData = tierSnap.data();
+    const available = tierData.quantity - (tierData.sold || 0);
+
+    if (available < quantity) {
+      throw new Error(`Nema dovoljno karata. Dostupno: ${available}`);
+    }
+
+    transaction.update(tierRef, {
+      sold: (tierData.sold || 0) + quantity,
+    });
+
+    transaction.set(bookingRef, {
+      userId: user.uid,
+      userEmail: user.email,
+      userName: user.displayName || user.email,
+      eventId: event.id,
+      eventTitle: event.title,
+      eventCity: event.city,
+      eventAddress: event.address || "",
+      eventStart: event.startDate,
+      tierId: tier.id,
+      tierName: tier.name,
+      tierPrice: tier.price,
+      quantity,
+      totalPrice: tier.price * quantity,
+      status: "confirmed",
+      createdAt: serverTimestamp(),
+    });
+  });
+
+  return bookingRef.id;
+}
+
+//get booking for user
+export async function getUserBooking(userId) {
+  const q = query(
+    collection(db, "bookings"),
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }

@@ -7,7 +7,7 @@ import { useSearchParams } from "react-router-dom";
 const CATEGORIES = [
   { value: "", label: "Sve kategorije" },
   { value: "music", label: "Muzika" },
-  { value: "sport", label: "Sport" },
+  { value: "sports", label: "Sport" },
   { value: "food", label: "Hrana" },
   { value: "art", label: "Umjetnost" },
   { value: "tech", label: "Tech" },
@@ -21,11 +21,11 @@ export default function Events() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [city, setCity] = useState("");
-  const [SearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const s = SearchParams.get("search");
-    const c = SearchParams.get("category");
+    const s = searchParams.get("search");
+    const c = searchParams.get("category");
     if (s) setSearch(s);
     if (c) setCategory(c);
   }, []);
@@ -192,7 +192,6 @@ export default function Events() {
       </div>
 
       {/*Empty state */}
-
       {!loading && !error && events.length === 0 && (
         <div className="text-center py-16">
           <div className="text-5xl mb-4">🔍</div>
