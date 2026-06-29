@@ -197,7 +197,7 @@ export async function createBooking({ user, event, tier, quantity }) {
 }
 
 //get booking for user
-export async function getUserBooking(userId) {
+export async function getUserBookings(userId) {
   const q = query(
     collection(db, "bookings"),
     where("userId", "==", userId),
