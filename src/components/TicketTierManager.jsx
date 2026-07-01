@@ -5,6 +5,7 @@ const emptyTier = {
   price: "",
   quantity: "",
   description: "",
+  maxPerUser: "",
 };
 
 export default function TicketTierManager({ tiers, onChange }) {
@@ -27,7 +28,6 @@ export default function TicketTierManager({ tiers, onChange }) {
   }
 
   function removeTier(index) {
-    /* if (localTiers.length === 1) return; */
     const updated = localTiers.filter((_, i) => i !== index);
     setLocalTiers(updated);
     onChange(updated);
@@ -144,6 +144,28 @@ export default function TicketTierManager({ tiers, onChange }) {
               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
               />
             </div>
+          </div>
+
+          <div className="mt-3">
+            <label className="block text-xs text-gray-500 mb-1">
+              Maksimalno karata po korisniku (opcionalno)
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={tier.maxPerUser ?? ""}
+              onChange={(e) => updateTier(index, "maxPerUser", e.target.value)}
+              placeholder="npr. 4 (prazno bez limita)"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2
+            text-sm focus:outline-none focus:ring-2 focus:ring-blue-500
+            focus:border-transparent bg-white"
+            />
+            {tier.maxPerUser && (
+              <p className="text-xs text-gray-400 mt-1">
+                Jedan korisnik može kuoiti najviše {tier.maxPerUser} karte za
+                ovaj događaj.
+              </p>
+            )}
           </div>
         </div>
       ))}

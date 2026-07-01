@@ -115,12 +115,15 @@ export async function saveTicketTiers(eventId, tiers) {
   //add new tiers
   tiers.forEach((tier) => {
     const ref = doc(collection(db, "events", eventId, "tickets"));
+    const maxPerUser = Number(tier.maxPerUser);
     batch.set(ref, {
       name: tier.name,
       price: Number(tier.price),
       quantity: Number(tier.quantity),
-      sold: 0,
+      sold: tier.sold || 0,
       description: tier.description || "",
+      //fixed
+      maxPerUser: !isNaN(maxPerUser) && maxPerUser > 0 ? maxPerUser : null,
       createdAt: serverTimestamp(),
     });
   });
@@ -152,7 +155,24 @@ export async function createBooking({ user, event, tier, quantity }) {
         status: "confirmed",
         createdAt: serverTimestamp(),
       });
+
+      const ticketRef = doc(collection(db, "tickets"));
+      transaction.set(ticketRef, {
+        bookingId: bookingRef.id,
+        userId: user.uid,
+        eventId: event.id,
+        eventTitle: event.title,
+        eventStart: event.startDate,
+        tierId: "free",
+        tierName: "Besplatan ulaz",
+        tierPrice: 0,
+        status: "active",
+        ticketNumber: 1,
+        totalTickets: 1,
+        createdAt: serverTimestamp(),
+      });
     });
+
     return bookingRef.id;
   }
 
@@ -168,6 +188,30 @@ export async function createBooking({ user, event, tier, quantity }) {
 
     if (available < quantity) {
       throw new Error(`Nema dovoljno karata. Dostupno: ${available}`);
+    }
+
+    if (tierData.maxPerUser) {
+      const existingQ = query(
+        collection(db, "tickets"),
+        where("userId", "==", user.uid),
+        where("eventId", "==", event.id),
+        where("tierId", "==", tier.id),
+        where("status", "==", "active"),
+      );
+      const existingSnap = await getDocs(existingQ);
+      const alreadyOwned = existingSnap.size;
+
+      if (alreadyOwned + quantity > tierData.maxPerUser) {
+        const canBuy = tierData.maxPerUser - alreadyOwned;
+        if (canBuy <= 0) {
+          throw new Error(
+            `Već imate maksimalan broj karata (${tierData.maxPerUser}) za ovaj  događaj.`,
+          );
+        }
+        throw new Error(
+          `Možete kupiti još samo (${canBuy}) karte za ovaj događaj`,
+        );
+      }
     }
 
     transaction.update(tierRef, {
@@ -191,6 +235,26 @@ export async function createBooking({ user, event, tier, quantity }) {
       status: "confirmed",
       createdAt: serverTimestamp(),
     });
+
+    //create one individual ticket document per quantity (3 tickets- 3 ID)
+    for (let i = 0; i < quantity; i++) {
+      const ticketRef = doc(collection(db, "tickets"));
+      transaction.set(ticketRef, {
+        bookingId: bookingRef.id,
+        userId: user.uid,
+        eventId: event.id,
+        eventTitle: event.title,
+        eventStart: event.startDate,
+        tierId: tier.id,
+        tierName: tier.name,
+        tierPrice: tier.price,
+        tierPrice: tier.price,
+        status: "active",
+        ticketNumber: i + 1,
+        totalTickets: quantity,
+        createdAt: serverTimestamp(),
+      });
+    }
   });
 
   return bookingRef.id;
@@ -200,6 +264,28 @@ export async function createBooking({ user, event, tier, quantity }) {
 export async function getUserBookings(userId) {
   const q = query(
     collection(db, "bookings"),
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+//get individual ticket for a booking
+export async function getBookingTickets(bookingId) {
+  const q = query(
+    collection(db, "tickets"),
+    where("bookingId", "==", bookingId),
+    orderBy("ticketNumber", "asc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+//get all tickets for a user across all events
+export async function getUserTickets(userId) {
+  const q = query(
+    collection(db, "tickets"),
     where("userId", "==", userId),
     orderBy("createdAt", "desc"),
   );

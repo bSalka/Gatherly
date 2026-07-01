@@ -99,13 +99,17 @@ export default function Organizer() {
   async function openEdit(event) {
     setEditingEvent(event);
 
-    //firestore timestamp to local datetime format
     const toInput = (ts) => {
       if (!ts) return "";
-      const d = ts.toDate ? ts.toDate() : new Date(ts);
-      return d.toISOString().slice(0, 16);
+      if (ts.toDate) return ts.toDate().toISOString().slice(0, 16);
+      if (ts.seconds)
+        return new Date(ts.seconds * 1000).toISOString().slice(0, 16);
+      return new Date(ts).toISOString().slice(0, 16);
     };
     const existingTiers = await getTicketTiers(event.id);
+
+    console.log("EVENT", event);
+    console.log("TIERS", existingTiers);
 
     setForm({
       title: event.title || "",
@@ -116,7 +120,17 @@ export default function Organizer() {
       bannerURL: event.bannerURL || "",
       startDate: toInput(event.startDate),
       endDate: toInput(event.endDate),
-      tiers: existingTiers,
+      tiers: existingTiers.map((t) => ({
+        id: t.id,
+        name: t.name || "",
+        price: t.price ?? "",
+        quantity: t.quantity ?? "",
+        description: t.description || "",
+        sold: t.sold || 0,
+        // FIXED: if maxPerUser is somehow a Timestamp, convert to null
+        maxPerUser:
+          t.maxPerUser && typeof t.maxPerUser === "number" ? t.maxPerUser : "",
+      })),
     });
 
     setError("");

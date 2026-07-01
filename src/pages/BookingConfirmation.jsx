@@ -25,7 +25,7 @@ function formatDate(timestamp) {
 }
 
 function formatTime(timestamp) {
-  if (timestamp) return "";
+  if (!timestamp) return "";
   const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
   return date.toLocaleTimeString("bs-BA", {
     hour: "2-digit",
@@ -33,25 +33,17 @@ function formatTime(timestamp) {
   });
 }
 
-export default function BookingConfirmation() {
-  const { bookingId } = useParams();
-  const [booking, setBooking] = useState(null);
-  const [loading, setLoading] = useState(true);
+function TicketQRCard({ ticket }) {
   const qrRef = useRef(null);
-
-  useEffect(() => {
-    async function fetchBooking() {
-      try {
-        const snap = await getDoc(doc(db, "bookings", bookingId));
-        if (snap.exists()) setBooking({ id: snap.id, ...snap.data() });
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchBooking();
-  }, [bookingId]);
+  const qrValue = JSON.stringify({
+    ticketId: ticket.id,
+    bookingId: ticket.bookingId,
+    event: ticket.eventTitle,
+    tier: event.tierName,
+    ticketNumber: ticket.ticketNumber,
+    totalTickets: ticket.totalTickets,
+    status: ticket.status,
+  });
 
   //download qr code as image
   function downloadQR() {
@@ -60,9 +52,96 @@ export default function BookingConfirmation() {
     const url = canvas.toDataURL("image/png");
     const a = document.createElement("a");
     a.href = url;
-    a.download = `gatherly-ticket-${bookingId}.png`;
+    a.download = `gatherly-ticket-${ticket.bookingId}.png`;
     a.click();
   }
+
+  return (
+    <div
+      className="bg-gray-50 border border-gray-200 rounded-2xl p-5
+    flex flex-col items-center"
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <span
+          className="bg-blue-100 text-blue-700 text-xs font-semibold
+        px-3 py-1 rounded-full"
+        >
+          Karta {ticket.ticketNumber} od {ticket.totalTickets}
+        </span>
+        <span className="text-xs text-gray-400">{ticket.tierName}</span>
+      </div>
+
+      <p className="text-xs text-gray-400 mb-3 text-center">
+        Pokažite svoj QR kod na ulazu
+      </p>
+
+      <div
+        ref={qrRef}
+        className="bg-white p-4 rounded-2xl shadow-sm border
+      border-gray-200 mb-3"
+      >
+        <QRCodeCanvas
+          value={qrValue}
+          size={160}
+          level="H"
+          includeMargin={false}
+        />
+      </div>
+
+      <p className="font-mono text-xs text-gray-400 mb-3 text-center break-all px-2">
+        {ticket.id}
+      </p>
+
+      <button
+        onClick={downloadQR}
+        className="flex items-center gap-2 px-3 py-2 border border-gray-300
+      rounded-lg text-xs text-gray-600 hover:bg-white transition-colors"
+      >
+        <svg
+          className="w-3.5 h-3.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+          />
+        </svg>
+        Preuzmi kartu {ticket.ticketNumber}
+      </button>
+    </div>
+  );
+}
+
+export default function BookingConfirmation() {
+  const { bookingId } = useParams();
+  const [booking, setBooking] = useState(null);
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const qrRef = useRef(null);
+
+  useEffect(() => {
+    async function fetchBooking() {
+      try {
+        const snap = await getDoc(doc(db, "bookings", bookingId));
+        if (snap.exists()) {
+          const bookingData = { id: snap.id, ...snap.data() };
+          setBooking(bookingData);
+
+          const ticketData = await getBookingTickets(bookingId);
+          setTickets(ticketData);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchBooking();
+  }, [bookingId]);
 
   if (loading) {
     return (
@@ -123,7 +202,9 @@ export default function BookingConfirmation() {
           Rezervacija potvrđena
         </h1>
         <p className="text-gray-500 text-sm">
-          Vaša karta je uspješno rezervirana
+          {booking.quantity === 1
+            ? "Vaša karta je uspješno rezervirana"
+            : `${booking.quantity} karte su uspješno rezervirane`}
         </p>
       </div>
 
@@ -158,100 +239,75 @@ export default function BookingConfirmation() {
           </div>
         </div>
 
-        <div className="p-6 border-b border-dashed border-gray-200">
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-gray-400 text-xs mb-0.5">Vrsta karte</p>
-              <p className="font-medium text-gray-800">{booking.tierName}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-xs mb-0.5">Količina</p>
-              <p className="font-medium text-gray-800">{booking.quantity}</p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-xs mb-0.5">Ukupno </p>
-              <p className="font-bold text-blue-600">
-                {booking.totalPrice === 0
-                  ? "Besplatno"
-                  : `${booking.totalPrice} KM`}
-              </p>
-            </div>
-            <div>
-              <p className="text-gray-400 text-xs mb-0.5">Status</p>
-              <p className="font-medium text-green-600">Potvrđeno</p>
+        <div className="p-6">
+          <div className="p-6 border-b border-dashed border-gray-200">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-gray-400 text-xs mb-0.5">Vrsta karte</p>
+                <p className="font-medium text-gray-800">{booking.tierName}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-xs mb-0.5">Broj karata</p>
+                <p className="font-medium text-gray-800">
+                  {booking.quantity}{" "}
+                  {booking.quantity === 1 ? "karta" : "karte"}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-xs mb-0.5">Ukupno </p>
+                <p className="font-bold text-blue-600">
+                  {booking.totalPrice === 0
+                    ? "Besplatno"
+                    : `${booking.totalPrice} KM`}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-xs mb-0.5">Status</p>
+                <p className="font-medium text-green-600">Potvrđeno</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/*QR code section */}
-        <div className="p-6 flex flex-col items-center bg-gray-50">
-          <p className="text-xs text-gray-400 mb-4 text-center">
-            Pokažite svoj QR kod na ulazu
-          </p>
+        <div className="mb-6">
+          <h2 className="text-base font-semibold text-gray-900 mb-3">
+            {tickets.length === 1
+              ? "Vaša karta"
+              : `Vaše karte (${tickets.length})`}
+          </h2>
 
-          {/*QR KOD */}
-          <div
-            ref={qrRef}
-            className="bg-white p-4 rounded-2xl shadow-sm border 
-          border-gray-200 mb-4"
-          >
-            <QRCodeCanvas
-              value={qrValue}
-              size={160}
-              level="H"
-              includeMargin={false}
-            />
-          </div>
-
-          <p
-            className="font-mono text-xs text-gray-500 mb-4 text-center
-          break-all px-4"
-          >
-            {booking.id}
-          </p>
-
-          {/*Download btn */}
-          <button
-            onClick={downloadQR}
-            className="flex items-center gap-2 px-4 py-2.5 border
-          border-gray-300 rounded-xl text-sm text-gray-600 hover:bg-white transition-colors"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {tickets.length > 0 ? (
+            <div className="space-y-4">
+              {tickets.map((ticket) => (
+                <TicketQRCard key={ticket.id} ticket={ticket} />
+              ))}
+            </div>
+          ) : (
+            <div
+              className="bg-gray-50 border border-gray-200 rounded-2xl
+            p-8 text-center text-gray-400 text-sm"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-              />
-            </svg>
-            Preuzmi QR kod
-          </button>
+              Karte se generišu...
+            </div>
+          )}
         </div>
-      </div>
 
-      <div className="flex flex-col gap-3">
-        <Link
-          to="/account"
-          className="w-full bg-blue-600 text-white py-3 
-  rounded-xl font-medium hover:bg-blue-700 transition-colors
-  text-sm text-center"
-        >
-          {" "}
-          Vidi moje rezervacije
-        </Link>
-
-        <Link
-          to="/events"
-          className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium 
+        <div className="flex flex-col gap-3">
+          <Link
+            to="/account"
+            className="w-full bg-blue-600 text-white py-3 rounded-xl font-medium
             hover:bg-blue-700 transition-colors text-sm text-center"
-        >
-          Pretražite više događaja
-        </Link>
+          >
+            Vidi moje rezervacije
+          </Link>
+          <Link
+            to="/events"
+            className="w-full border border-gray-300 text-gray-600 py-3 rounded-xl  
+            font-medium hover:bg-gray-50 transition-colors text-sm text-center"
+          >
+            Pretraži više događaja
+          </Link>
+        </div>
       </div>
     </div>
   );
