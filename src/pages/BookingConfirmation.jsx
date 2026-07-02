@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { QRCodeCanvas } from "qrcode.react";
+import { sendBookingConfirmation } from "../services/email";
+import { getBookingTickets } from "../services/events";
 
 function formatDate(timestamp) {
   if (!timestamp) return "";
@@ -122,6 +124,7 @@ export default function BookingConfirmation() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const qrRef = useRef(null);
+  const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
     async function fetchBooking() {
@@ -133,6 +136,17 @@ export default function BookingConfirmation() {
 
           const ticketData = await getBookingTickets(bookingId);
           setTickets(ticketData);
+
+          if (!emailSent)
+            try {
+              await sendBookingConfirmation({
+                booking: bookingData,
+                tickets: ticketData,
+              });
+              console.log("Email sent!");
+            } catch (emailErr) {
+              console.error("Email failed:", emailErr);
+            }
         }
       } catch (err) {
         console.error(err);
@@ -205,6 +219,10 @@ export default function BookingConfirmation() {
           {booking.quantity === 1
             ? "Vaša karta je uspješno rezervirana"
             : `${booking.quantity} karte su uspješno rezervirane`}
+        </p>
+
+        <p className="text-xs text-gray-400 mt-1">
+          Potvrda je poslana na {booking.userEmail}
         </p>
       </div>
 
