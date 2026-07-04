@@ -1,1 +1,564 @@
-export default function Admin() { return <h1 className='text-2xl font-bold p-6'>Admin</h1> }
+import { useEffect, useState } from "react";
+import { getAllEvents, updateEventStatus } from "../services/events";
+import { getAllUsers, setUserRole } from "../services/users";
+import { useAuth } from "../context/AuthContext";
+
+function formatDate(timestamp) {
+  if (!timestamp) return "-";
+  try {
+    const date = timestamp.toDate
+      ? timestamp.toDate()
+      : timestamp.seconds
+        ? new Date(timestamp.seconds * 1000)
+        : new Date(timestamp);
+    const months = [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "maj",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "okt",
+      "nov",
+      "dec",
+    ];
+    return `${date.getDate()}. ${months[date.getMonth()]} ${date.getFullYear()}`;
+  } catch {
+    return "-";
+  }
+}
+
+const STATUS_STYLES = {
+  pending: "bg-yellow-100 text-yellow-700",
+  approved: "bg-green-100 text-green-700",
+  rejected: "bg-red-100 text-red-600",
+  cancelled: "bg-gray-100 text-gray-500",
+};
+
+const STATUS_LABELS = {
+  pending: "Na čekanju",
+  approved: "Odobren",
+  rejected: "Odbijen",
+  cancelled: "Otkazan",
+};
+
+const ROLE_STYLES = {
+  admin: "bg-purple-100 text-purple-700",
+  organizer: "bg-blue-100 text-blue-700",
+  visitor: "bg-gray-100 text-gray-600",
+};
+
+const ROLE_LABELS = {
+  admin: "Admin",
+  organizer: "Organizator",
+  visitor: "Korisnik",
+};
+
+export default function Admin() {
+  const { user } = useAuth();
+  const [tab, setTab] = useState("events");
+
+  const [events, setEvents] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventFilter, setEventFilter] = useState("pending");
+  const [rejectNote, setRejectNote] = useState("");
+  const [rejectingId, setRejectingId] = useState(null);
+  const [actionLoading, setActionLoading] = useState(null);
+
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(null);
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    fetchEvents();
+    fetchUsers();
+  }, []);
+
+  async function fetchEvents() {
+    try {
+      setEventsLoading(true);
+      const data = await getAllEvents();
+      setEvents(data);
+    } catch (err) {
+      console.error(err);
+      setError("Greška pri učitavanju događaja.");
+    } finally {
+      setEventsLoading(false);
+    }
+  }
+
+  async function fetchUsers() {
+    try {
+      setUsersLoading(true);
+      const data = await getAllUsers();
+      setUsers(data);
+    } catch (err) {
+      console.error(err);
+      setError("Greška pri učitavanju korinika.");
+    } finally {
+      setUsersLoading(false);
+    }
+  }
+
+  async function handleApprove(eventId) {
+    try {
+      setActionLoading(eventId);
+      setError("");
+      await updateEventStatus(eventId, "approved");
+      setEvents(
+        events.map((e) =>
+          e.id === eventId ? { ...e, status: "approved" } : e,
+        ),
+      );
+      setSuccess("Događaj odobren!");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      console.error(err);
+      setError("Greška pri dodbravanju.");
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleReject(eventId) {
+    try {
+      setActionLoading(eventId);
+      setError("");
+      await updateEventStatus(eventId, "rejected", rejectNote);
+      setEvents(
+        events.map((e) =>
+          e.id === eventId ? { ...e, status: "rejected" } : e,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+      setError("Greška pri odbijanju.");
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleRoleChange(uid, newRole) {
+    //prevent admin from changing their own role
+    if (uid === user.uid) {
+      setError("Ne možete promijeniti svoju ulogu.");
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
+    try {
+      setRoleLoading(uid);
+      await setUserRole(uid, newRole);
+      setUsers(users.map((u) => (u.uid === uid ? { ...u, role: newRole } : u)));
+      setSuccess(`Uloga promijenjena u ${ROLE_LABELS[newRole]}.`);
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      console.error(err);
+      setError("Greška pri pomjeni uloge.");
+    } finally {
+      setRoleLoading(null);
+    }
+  }
+
+  //filter events
+  const filteredEvents =
+    eventFilter === "all"
+      ? events
+      : events.filter((e) => e.status === eventFilter);
+
+  //stats
+  const totalEvents = events.length;
+  const pendingEvents = events.filter((e) => e.status === "pending").length;
+  const approvedEvents = events.filter((e) => e.status === "pending").length;
+  const totalUsers = users.length;
+  const organizers = users.filter((u) => u.role === "organizer").length;
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      {/*Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Admin panel </h1>
+        <p className="text-gray-500 text-sm mt-0.5">
+          Upravljajte platformom Gatherly
+        </p>
+      </div>
+
+      {/*Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        {[
+          { label: "Svi događaji", value: totalEvents, color: "text-gray-900" },
+          {
+            label: "Na čekanju",
+            value: pendingEvents,
+            color: "text-yellow-600",
+          },
+          { label: "Odobreni", value: approvedEvents, color: "text-green-600" },
+          { label: "Korisnici", value: totalUsers, color: "text-blue-600" },
+          {
+            label: "Organizatori",
+            value: organizers,
+            color: "text-purple-600",
+          },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="bg-white border border-gray-200 rounded-2xl p-4"
+          >
+            <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
+            <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/*Success / errormessage */}
+      {success && (
+        <div
+          className="bg-green-50 border border-green-200 text-green-700
+      rounded-xl px-4 py-3 mb-4 text-sm"
+        >
+          {success}
+        </div>
+      )}
+      {error && (
+        <div
+          className="bg-red-50 border border-red-200 text-red-600
+        rounded-xl px-4 py-3 mb-4 text-sm"
+        >
+          {error}
+        </div>
+      )}
+
+      {/*Tabs */}
+      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-6 w-fit">
+        {[
+          { id: "events", label: "Događaji" },
+          { id: "users", label: "Korisnici" },
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors
+         ${
+           tab === t.id
+             ? "bg-white text-gray-900 shadow-sm"
+             : "text-gray-500 hover:text-gray-700"
+         }`}
+          >
+            {t.label}
+            {t.id === "events" && pendingEvents > 0 && (
+              <span
+                className="ml-2 bg-yellow-500 text-white text-xs
+             px-1.5 py-0.5 rounded-full"
+              >
+                {pendingEvents}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Events tab */}
+      {tab === "events" && (
+        <div>
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {[
+              { value: "pending", label: "Na čekanju" },
+              { value: "approved", label: "Odobreni" },
+              { value: "rejected", label: "Odbijeni" },
+              { value: "all", label: "Svi" },
+            ].map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setEventFilter(f.value)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium
+                 transition-colors border
+                   ${
+                     eventFilter === f.value
+                       ? "bg-blue-600 text-white border-blue-600"
+                       : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+                   }`}
+              >
+                {f.label}
+                {f.value !== "all" && (
+                  <span className="ml-1.5 opacity-70">
+                    (
+                    {
+                      events.filter((e) =>
+                        f.value === "all" ? true : e.status === f.value,
+                      ).length
+                    }
+                    )
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {eventsLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-white border border-gray-200 rounded-2xl
+                    p-4 animate-pulse h-20"
+                />
+              ))}
+            </div>
+          ) : filteredEvents.length === 0 ? (
+            <div
+              className="text-center py-16 bg-white border border-gray-200
+            rounded-2xl"
+            >
+              <p className="text-gray-500 text-sm">
+                Nema događaja u ovoj kategoriji
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="bg-white border border-gray-200 rounded-2xl p-4"
+                >
+                  {rejectingId === event.id && (
+                    <div
+                      className="fixed inset-0 bg-black/50 z-50 flex
+                    items-center justify-center p-4"
+                    >
+                      <div
+                        className="bg-white rounded-2xl p-6 
+                        max-w-sm w-full"
+                      >
+                        <h3 className="font-semibold text-gray-900 mb-3">
+                          Odbiti događaj
+                        </h3>
+                        <p className="text-sm text-gray-500 mb-3">
+                          Opcionalno dodaajte razlog odbijanja
+                        </p>
+                        <textarea
+                          value={rejectNote}
+                          onChange={(e) => setRejectNote(e.target.value)}
+                          placeholder="Razlog odbijanja..."
+                          rows={3}
+                          className="w-full border border-gray-300 rounded-xl px-3
+                        py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-50
+                        resize-none mb-4"
+                        />
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => {
+                              setRejectingId(null);
+                              setRejectNote("");
+                            }}
+                            className="flex-1 border-gray-300 text-gray-600 py-2.5
+                        rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+                          >
+                            Odustani
+                          </button>
+                          <button
+                            onClick={() => handleReject(event.id)}
+                            disabled={actionLoading === event.id}
+                            className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm
+                        font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                          >
+                            {actionLoading === event.id
+                              ? "Odbijanje..."
+                              : "Odbij"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-4 items-start">
+                    <div
+                      className="w-16 h-14 rounded-xl overflow-hidden bg-gray-100
+                    shrink-0"
+                    >
+                      {event.bannerURL ? (
+                        <img
+                          src={event.bannerURL}
+                          alt={event.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center 
+                      text-2xl"
+                        >
+                          🎉
+                        </div>
+                      )}
+                    </div>
+
+                    {/*  info */}
+                    <div className="flex-1 min-w-0">
+                      <div
+                        className="flex items-center gap-2
+                        mb-0.5 flex-wrap"
+                      >
+                        <h3
+                          className="font-medium text-gray-900 
+                            text-sm truncate"
+                        >
+                          {event.title}
+                        </h3>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full
+                         font-medium shrink-0
+                         ${
+                           STATUS_STYLES[event.status] || STATUS_STYLES.pending
+                         }`}
+                        >
+                          {STATUS_LABELS[event.status] || "Na čekanju"}
+                        </span>
+                      </div>
+                      <p>
+                        {event.city} {event.address ? `· ${event.address}` : ""}
+                        {" · "}
+                        {formatDate(event.startDate)}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Organizator: {event.organizerName}
+                      </p>
+                      {event.adminNote && (
+                        <p className="text-xs text-red-500 mt-1">
+                          Napomena:{event.adminNote}
+                        </p>
+                      )}
+                    </div>
+
+                    {/*Actions */}
+                    {event.status === "pending" && (
+                      <div className="flex gap-2 shrink-0">
+                        <button
+                          onClick={() => handleApprove(event.id)}
+                          disabled={actionLoading === event.id}
+                          className="text-xs bg-green-600 text-white px-3 py-1.5 
+                        rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                        >
+                          {actionLoading === event.id ? "..." : "Odobri"}
+                        </button>
+                        <button
+                          onClick={() => setRejectingId(event.id)}
+                          disabled={actionLoading === event.id}
+                          className="text-xs border border-red-200 text-red-500
+                        px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors
+                        disabled:opacity-50"
+                        >
+                          Odbij
+                        </button>
+                      </div>
+                    )}
+
+                    {/*Review rejected and approved events */}
+                    {(event.status === "approved" ||
+                      event.status === "rejected") && (
+                      <div className="flex gap-2 shrink-0">
+                        {event.status === "rejected" && (
+                          <button
+                            onClick={() => handleApprove(event.id)}
+                            disabled={actionLoading === event.id}
+                            className="text-xs bg-green-600 text-white px-3 py-1.5
+                            rounded-lg hover:bg-green-700 transition-colors 
+                            disabled:opacity-50"
+                          >
+                            Odobri
+                          </button>
+                        )}
+                        {event.status === "approved" && (
+                          <button
+                            onClick={() => setRejectingId(event.id)}
+                            disabled={actionLoading === event.id}
+                            className="text-xs border border-red-200 text-red-500
+                        px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors 
+                        disabled:opacity-50"
+                          >
+                            Odbij
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/*User tabs */}
+      {tab === "users" && (
+        <div>
+          {usersLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-white border border-gray-200 rounded-2xl
+                                p-4 animate-pulse h-16"
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {users.map((u) => (
+                <div
+                  key={u.uid || u.id}
+                  className="bg-white border border-gray-200 rounded-2xl
+                p-4 flex items-center gap-4"
+                >
+                  {/*Avatar */}
+                  <div
+                    className="w-9 h-9 rounded-full bg-blue-100 flex
+                items-center justify-center text-blue-600
+                font-semibold text-sm shrink-0"
+                  >
+                    {(u.name || u.email || "?")[0].toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {u.name || "—"}
+                    </p>
+                    <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                  </div>
+                  <span
+                    className={`text-xs px-2.5 py-1 rounded-full
+                 font-medium shrink-0 ${ROLE_STYLES[u.role] || ROLE_STYLES.visitor}`}
+                  >
+                    {ROLE_LABELS[u.role] || "Posjetilac"}
+                  </span>
+
+                  {u.uid !== user.uid && (
+                    <select
+                      value={u.role || "visitor"}
+                      disabled={roleLoading === u.uid}
+                      onChange={(e) => handleRoleChange(u.uid, e.target.value)}
+                      className="text-xs border border-gray-300 rounded-lg
+                     px-2 py-1.5 bg-white text-gray-600
+                    focus:outline-none focus:ring-2
+                  focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      <option value="visitor">Posjetilac</option>
+                      <option value="organizer">Organizator</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  )}
+
+                  {u.uid === user.uid && (
+                    <span className="text-xs text-gray-400 shrink-0">(Vi)</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

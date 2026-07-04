@@ -292,3 +292,20 @@ export async function getUserTickets(userId) {
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
+
+//all events for admin
+export async function getAllEvents() {
+  const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+//approve or reject event
+export async function updateEventStatus(eventId, status, note = "") {
+  const ref = doc(db, "events", eventId);
+  await updateDoc(ref, {
+    status,
+    adminNote: note,
+    reviewedAt: serverTimestamp(),
+  });
+}
