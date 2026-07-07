@@ -359,6 +359,7 @@ export default function EventDetail() {
                   />
                 </svg>
               </div>
+
               <div>
                 <p className="text-xs text-gray-400 mb-0.5">Lokacija</p>
                 <p className="text-sm font-medium text-gray-800">
@@ -407,6 +408,76 @@ export default function EventDetail() {
             <p className="text-gray-600 leading-relaxed text-sm whitespace-pre-line">
               {event.description}
             </p>
+          </div>
+
+          {/*Map */}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-3">
+              Lokacija
+            </h2>
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4">
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-8 h-8 bg-green-100 rounded-lg flex items-center
+                justify-center shrink-0 mt-0.5"
+                >
+                  <svg
+                    className="w-4 h-4 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  {event.address && (
+                    <p className="text-sm font-medium text-gray-900">
+                      {event.address}
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-500">{event.city}</p>
+
+                  <a
+                    href={`https://www.google.com/maps/search/${encodeURIComponent(
+                      `${event.address || ""} ${event.city || ""}`,
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 mt-3 text-xs text-blue-600
+                    hover:text-blue-700 font-medium border border-blue-200 px-3 py-1.5
+                    rounded-lg hover:bg-blue-50 transition-colors"
+                  >
+                    {" "}
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                    Otvori u Google Maps
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/*Action btns */}
