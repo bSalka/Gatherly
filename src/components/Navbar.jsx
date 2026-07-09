@@ -15,8 +15,8 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white border-b border-gray-200 px-6 py-4 z-50">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
+    <nav className="bg-white/90 border-b backdrop-blur-md border-gray-200 px-6 py-4 sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto flex items-center text-center justify-between">
         {/*Logo*/}
         <Link to="/" className="text-xl font-bold text-blue-600">
           Gatherly
@@ -63,7 +63,7 @@ export default function Navbar() {
                 >
                   {(user.displayName || user.email || "?")[0].toUpperCase()}
                 </div>
-                <span className="max-w-[120px] truncate">
+                <span className="max-w-30px truncate">
                   {user.displayName || user.email}
                 </span>
               </Link>

@@ -9,7 +9,7 @@ const CATEGORIES = [
   { value: "music", label: "Muzika" },
   { value: "sports", label: "Sport" },
   { value: "food", label: "Hrana" },
-  { value: "art", label: "Umjetnost" },
+  { value: "art", label: "Kultura" },
   { value: "tech", label: "Tech" },
   { value: "other", label: "Ostalo" },
 ];

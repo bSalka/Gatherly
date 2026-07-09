@@ -48,7 +48,7 @@ const CATEGORY_LABELS = {
   music: { label: "Muzika", color: "bg-purple-100 text-purple-700" },
   sports: { label: "Sport", color: "bg-green-100 text-green-700" },
   food: { label: "Hrana", color: "bg-orange-100 text-orange-700" },
-  art: { label: "Umjetnost", color: "bg-pink-100 text-pink-700" },
+  art: { label: "Kultura", color: "bg-pink-100 text-pink-700" },
   tech: { label: "Tech", color: "bg-blue-100 text-blue-700" },
   other: { label: "Ostalo", color: "bg-gray-100 text-gray-600" },
 };

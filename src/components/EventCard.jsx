@@ -32,7 +32,7 @@ const CATEGORY_LABELS = {
   music: { label: "Muzika", color: "bg-purple-100 text-purple-700" },
   sports: { label: "Sport", color: "bg-green-100 text-green-700" },
   food: { label: "Hrana", color: "bg-orange-100 text-orange-700" },
-  art: { label: "Umjetnost", color: "bg-pink-100 text-pink-700" },
+  art: { label: "Kultura", color: "bg-pink-100 text-pink-700" },
   tech: { label: "Tech", color: "bg-blue-100 text-blue-700" },
   other: { label: "Ostalo", color: "bg-gray-100 text-gray-600" },
 };
@@ -94,7 +94,7 @@ export default function EventCard({ event }) {
         {/*Date */}
         <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
           <svg
-            className="w-3.5 h-3.5 flex-shrink-0"
+            className="w-3.5 h-3.5 shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -112,7 +112,7 @@ export default function EventCard({ event }) {
         {/*City*/}
         <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3">
           <svg
-            className="w-3.5 h-3.5 flex-shrink-0"
+            className="w-3.5 h-3.5 shrink-0"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

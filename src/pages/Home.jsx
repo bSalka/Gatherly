@@ -1,16 +1,27 @@
 import { useEffect, useState } from "react";
-import { Link, useAsyncError, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import EventCard from "../components/EventCard";
 import EventCardSkeleton from "../components/EventCardSkeleton";
 import { getEvents } from "../services/events";
 
 const CATEGORIES = [
+  { value: "", label: "Sve kategorije" },
   { value: "music", label: " Muzika" },
   { value: "sports", label: " Sport" },
   { value: "food", label: " Hrana" },
-  { value: "art", label: " Umjetnost" },
+  { value: "art", label: " Kultura" },
   { value: "tech", label: " Tech" },
   { value: "other", label: " Ostalo" },
+];
+
+const CITIES = [
+  "Sarajevo",
+  "Tuzla",
+  "Mostar",
+  "Banja Luka",
+  "Zenica",
+  "Bijeljina",
+  "Trebinje",
 ];
 
 export default function Home() {
@@ -18,28 +29,44 @@ export default function Home() {
   const [featuredEvents, setFeaturedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
 
   useEffect(() => {
     async function fetchFeatured() {
       try {
-        const data = await getEvents({});
-        setFeaturedEvents(data.slice(0, 3));
+        setLoading(true);
+
+        const data = await getEvents({
+          category: selectedCategory,
+          city: selectedCity.trim(),
+        });
+
+        setFeaturedEvents(data.slice(0, 6));
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     }
+
     fetchFeatured();
-  }, []);
+  }, [selectedCategory, selectedCity]);
 
   function handleSearch(e) {
     e.preventDefault();
+    const params = new URLSearchParams();
     if (search.trim()) {
-      navigate(`/events?search=${encodeURIComponent(search.trim())}`);
-    } else {
-      navigate("/events");
+      params.set("search", search.trim());
     }
+    if (selectedCategory) {
+      params.set("category", selectedCategory);
+    }
+    if (selectedCity.trim()) {
+      params.set("city", selectedCity.trim());
+    }
+
+    navigate(`/events?${params.toString()}`);
   }
 
   return (
@@ -119,65 +146,70 @@ export default function Home() {
       {/*Categories */}
       <section className="bg-gray-50 py-10">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-lgfont-semibold text-gray-800 mb-4 text-center">
-            Pretražite po kategoriji
-          </h2>
-          <div className="flex flex-wrap justify-center gap-3">
-            {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.value}
-                to={`/events?category=?{cat.value}`}
-                className="bg-white border border-gray-200 text-gray-700
-                px-4 py-2.5 rounded-xl text-sm font-medium hover:border-blue-400
-                hover:text-blue-600 hover:shadow-sm transition-all"
-              >
-                {cat.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/*Featured events */}
-      <section className="bg-gray-50 py-10">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
+          <div
+            className="flex flex-col sm:flex-row sm:items-center
+          justify-between gap-4 mb-6"
+          >
             <div>
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
                 Nadolazeći događaji
               </h2>
-              <p className="text-gray-500 text-sm mt-0.5">
-                Ne propustite ove događaje
-              </p>
             </div>
-            <Link
-              to="/events"
-              className="text-sm text-blue-600 hover:underline 
-              font-medium flex items-center gap-1"
-            >
-              Svi događji
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+
+            <div className="flex gap-2 flex-wrap">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-xl
+              text-sm bg-white text-gray-700 focus:outline-none
+              focus:ring-2 focus:ring-blue-500"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
+                {CATEGORIES.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+
+              <div className="relative">
+                <svg
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4
+                            text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Grad..."
+                  value={selectedCity}
+                  onChange={(e) => {
+                    setSelectedCity(e.target.value);
+                  }}
+                  className="px-3 py-2 pl-9 border border-gray-300 rounded-xl text-sm
+                  bg-white text-gray-700 focus:outline-none focus:ring-2
+                  focus:ring-blue-500 w-40"
                 />
-              </svg>
-            </Link>
+              </div>
+            </div>
           </div>
 
-          <div
-            className="grid grid-cols-1 sm:grid-cols-2 ls:grid-cols-2
-          lg:grid-cols-3 gap-5"
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {loading &&
-              Array.from({ length: 3 }).map((_, i) => (
+              Array.from({ length: 6 }).map((_, i) => (
                 <EventCardSkeleton key={i} />
               ))}
             {!loading &&
@@ -195,117 +227,48 @@ export default function Home() {
         </div>
       </section>
 
-      {/*Kako funkcioniše */}
-      <section className="bg-white py-16">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-10">
-            <h2>Kako funkcioniše</h2>
-            <p className="text-gray-500 text-sm mt-2">
-              Tri jednostavna koraka do vašeg sljedećeg doživljaja
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div
-                className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center
-              justify-center mx-auto mb-4"
-              >
-                <svg
-                  className="w-7 h-7 text-blue-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
-              <div
-                className="text-xs font-semibold text-blue-600 mb-1
-                uppercase tracking-wide"
-              >
-                Korak 1
-              </div>
-              <h3 className="font-semibold text-gray-900mb-2">
-                Pronađite događaje
-              </h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Pretražujte događaje po gradu, kategoriji ili datumu.
+      {/*section 3 recenice */}
+      <section className="bg-white py-12">
+        <div className="max-w-5xl mx-auto px-4">
+          <div
+            className="flex flex-col md:flex-row items-center
+          justify-center gap-0"
+          >
+            {/*1 */}
+            <div className="flex-1 text-center px-8 py-4">
+              <p className="text-gray-700 font-medium text-base leading-relaxed">
+                Otkrij događaje koji će upotpuniti tvoje slobodno vrijeme.
               </p>
             </div>
 
-            <div className="text-center">
-              <div
-                className="w-14 h-14 bg-green-100 rounded-2xl flex items-center
-            justify-center mx-auto mb-4"
-              >
-                <svg
-                  className="w-7 h-7 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-                  />
-                </svg>
-              </div>
-              <div
-                className="text-xs font-semibold text-green-600 mb-1
-              uppercase tracking-wide"
-              >
-                Korak 2
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Kupite kartu</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Sigurna online kupovina karata za nekoliko sekundi.
+            {/*Divider */}
+            <div className="hidden md:block w-px h-20 bg-gray-400 shrink-0" />
+            {/*Mobile divider */}
+            <div className="md:hidden w-30 h-px bg-gray-400 my-2" />
+
+            {/*2 */}
+            <div className="flex-1 text-center px-8 py-4">
+              <p className="text-gray-700 font-medium text-base leading-relaxed">
+                Od koncerata i festivala do edukativnih i sportskih
+                manifestacija - sve što tražiš nalazi se na jednom mjestu.
               </p>
             </div>
 
-            <div className="text-center">
-              <div
-                className="w-14 h-14 bg-purple-100 rounded-2xl
-                flex items-center justify-center mx-auto mb-4"
-              >
-                <svg
-                  className="w-7 h-7 text-purple-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <div
-                className="text-xs font-semibold text-purple-600 mb-1
-              uppercase tracking-wide"
-              >
-                Korak 3
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-2">Uživajte</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">
-                Pokažite QR kod na ulazu i uživajte
+            {/*Divider */}
+            <div className="hidden md:block w-px h-20 bg-gray-400 shrink-0" />
+            {/*Mobile divider */}
+            <div className="md:hidden w-30 h-px bg-gray-400 my-2" />
+
+            {/*3 */}
+            <div className="flex-1 text-center px-8 py-4">
+              <p className="text-gray-700 font-medium text-base leading-relaxed">
+                Prati najnovija dešavanja, rezerviši ulaznice u nekoliko klikova
+                i uživaj u iskustvima koja se pamte.
               </p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Stats*/}
-      <section></section>
     </div>
   );
 }
