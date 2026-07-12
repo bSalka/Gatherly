@@ -11,9 +11,14 @@ export default function Favourites() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     async function fetchFavourites() {
       try {
-        const data = await getUserFavourites(UserActivation.uid);
+        const data = await getUserFavourites(user.uid);
         setEvents(data);
       } catch (err) {
         console.error(err);
@@ -22,14 +27,12 @@ export default function Favourites() {
       }
     }
     fetchFavourites();
-  }, [user.uid]);
+  }, [user]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 text-2xl font-bold text-gray-900>
-          Omiljeni događaji
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900">Omiljeni događaji</h1>
         <p className="text-gray-500 text-sm mt-0.5">
           Događaji koje ste sačuvali
         </p>

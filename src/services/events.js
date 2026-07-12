@@ -327,6 +327,7 @@ export async function toggleFavourite(userId, eventId) {
 
 //Get user favourites
 export async function getUserFavourites(userId) {
+  if (!userId) return [];
   const snap = await getDoc(doc(db, "users", userId));
   const ids = snap.data()?.favourites || [];
   if (ids.length === 0) return [];
