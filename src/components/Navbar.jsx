@@ -30,6 +30,16 @@ export default function Navbar() {
           >
             Pretraži događaje
           </Link>
+
+          {isLoggedIn && (
+            <Link
+              to="/favourites"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Omiljeni
+            </Link>
+          )}
+
           {isOrganizer && (
             <Link
               to="/organizer"
@@ -144,6 +154,16 @@ export default function Navbar() {
           >
             Pretraži događaje
           </Link>
+
+          {isLoggedIn && (
+            <Link
+              to="/favourites"
+              className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Omiljeni
+            </Link>
+          )}
+
           {isOrganizer && (
             <Link
               to="/organizer"

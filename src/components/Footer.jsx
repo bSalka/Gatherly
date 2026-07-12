@@ -13,10 +13,7 @@ export default function Footer() {
           </p>
 
           <div className="flex gap-6 text-sm text-gray-500 mt-2">
-            <Link
-              to="/events"
-              className="hover:text.blue-600 transition-colors "
-            >
+            <Link to="/events" className="hover:text-blue-600 transition ">
               Istražite događaje
             </Link>
             <Link to="/login" className="hover:text-blue-600 transition">
@@ -27,7 +24,7 @@ export default function Footer() {
             </Link>
           </div>
 
-          <div className="border-t border-gray-200 w-full mt-8 pt-6">
+          <div className="border-t border-gray-200 w-full mt-8 pt-5">
             <p className="text-xs text-gray-400">
               © {new Date().getFullYear()} Gatherly. All rights reserved.
             </p>

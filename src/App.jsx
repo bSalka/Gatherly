@@ -14,6 +14,7 @@ import Organizer from "./pages/Organizer";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import BookingConfirmation from "./pages/BookingConfirmation";
+import Favourites from "./pages/Favourites";
 
 export default function App() {
   return (
@@ -36,6 +37,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Account />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/favourites"
+            element={
+              <ProtectedRoute>
+                <Favourites />
               </ProtectedRoute>
             }
           />

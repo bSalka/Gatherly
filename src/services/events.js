@@ -12,6 +12,8 @@ import {
   serverTimestamp,
   writeBatch,
   runTransaction,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -308,4 +310,29 @@ export async function updateEventStatus(eventId, status, note = "") {
     adminNote: note,
     reviewedAt: serverTimestamp(),
   });
+}
+
+//TOGGLE Favourite
+export async function toggleFavourite(userId, eventId) {
+  const ref = doc(db, "users", userId);
+  const snap = await getDoc(ref);
+  const favourites = snap.data()?.favourites || [];
+  const isFav = favourites.includes(eventId);
+
+  await updateDoc(ref, {
+    favourites: isFav ? arrayRemove(eventId) : arrayUnion(eventId),
+  });
+  return !isFav;
+}
+
+//Get user favourites
+export async function getUserFavourites(userId) {
+  const snap = await getDoc(doc(db, "users", userId));
+  const ids = snap.data()?.favourites || [];
+  if (ids.length === 0) return [];
+
+  //fetch event
+  const promises = ids.map((id) => getEventById(id));
+  const events = await Promise.all(promises);
+  return events.filter(Boolean);
 }

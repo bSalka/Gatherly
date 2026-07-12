@@ -142,7 +142,7 @@ export default function EventCard({ event }) {
             {formatPrice(event.price)}
           </span>
           <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">
-            Detalj →
+            Više →
           </span>
         </div>
       </div>
