@@ -65,7 +65,7 @@ export default function Navbar() {
               >
                 <div
                   className="w-7 h-7 rounded-full bg-blue-100 flex items-center
-                                justify-center text-blue-600 font-medium text-xs"
+                justify-center text-blue-600 font-medium text-xs"
                 >
                   {(user.displayName || user.email || "?")[0].toUpperCase()}
                 </div>
@@ -74,11 +74,7 @@ export default function Navbar() {
                 </span>
               </Link>
 
-              <button
-                onClick={handleLogout}
-                className="text-sm border border-gray-300 px-4 py-2 rounded-lg
-             hover:bg-gray-50 transition-colors text-navbar"
-              >
+              <button onClick={handleLogout} className="text-sm btn-secondary">
                 Odjavi se
               </button>
             </>
@@ -87,20 +83,14 @@ export default function Navbar() {
               <Link to="/login" className="text-navbar">
                 Prijava
               </Link>
-              <Link
-                to="/signup"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
-              >
+              <Link to="/signup" className="btn-primary text-sm">
                 Registracija
               </Link>
             </>
           )}
           <button
             onClick={toggleTheme}
-            className="w-9 h-9 flex items-center justify-center rounded-xl
-                border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800
-                text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700
-                transition-colors"
+            className="btn-icon"
             title={isDark ? "Svijetli način" : "Tamni način"}
           >
             {isDark ? (
@@ -184,13 +174,13 @@ export default function Navbar() {
           <Link
             to="/events"
             onClick={() => setMenuOpen(false)}
-            className="text-sm text-navbar py-1"
+            className="mobile-nav-link"
           >
             Pretraži događaje
           </Link>
 
           {isLoggedIn && (
-            <Link to="/favourites" className="text-sm text-navbar">
+            <Link to="/favourites" className="mobile-nav-link">
               Omiljeni
             </Link>
           )}
@@ -199,7 +189,7 @@ export default function Navbar() {
             <Link
               to="/organizer"
               onClick={() => setMenuOpen(false)}
-              className="text-sm text-navbar py-1"
+              className="mobile-nav-link"
             >
               Moji događaji
             </Link>
@@ -208,7 +198,7 @@ export default function Navbar() {
             <Link
               to="/admin"
               onClick={() => setMenuOpen(false)}
-              className="text-sm text-navbar py-1"
+              className="mobile-nav-link"
             >
               Admin panel
             </Link>
@@ -218,13 +208,13 @@ export default function Navbar() {
               <Link
                 to="/account"
                 onClick={() => setMenuOpen(false)}
-                className="text-sm text-navbar py-1"
+                className="mobile-nav-link"
               >
                 Moj račun
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-sm text-left text-navbar py-1"
+                className="text-left mobile-nav-link"
               >
                 Odjavi se
               </button>
@@ -234,20 +224,22 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setMenuOpen(false)}
-                className="text-sm text-navbar py-1"
+                className="mobile-nav-link"
               >
                 Prijava
               </Link>
               <Link
                 to="/signup"
                 onClick={() => setMenuOpen(false)}
-                className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg
-                 hover:bg-blue-700 transition-colors text-center"
+                className="btn-primary text-sm text-center"
               >
                 Registracija
               </Link>
             </>
           )}
+          <button onClick={toggleTheme} className="btn-secondary text-sm mt-2">
+            {isDark ? "Svijetli način" : "Tamni način"}
+          </button>
         </div>
       )}
     </nav>

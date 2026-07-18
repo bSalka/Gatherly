@@ -20,7 +20,10 @@ body {
              dark:hover:text-blue-400 transition-colors;
   }
   .mobile-nav-link {
-    @apply text-sm text-navbar py-1;
+    @apply text-sm  py-1
+    text-gray-600 dark:text-gray-100
+     hover:text-blue-600 dark:hover:text-blue-400 
+     transition-colors;
   }
 
   /*Buttons*/
@@ -47,21 +50,5 @@ body {
     text-gray-600 dark:text-gray-100
     hover:bg-gray-50 dark:hover:bg-gray-700
     transition-colors;
-  }
-
-  .avatar {
-    @apply w-7 h-7
-    rounded-full
-    bg-blue-100 dark:bg-blue-900/40
-    flex items-center justify-center
-    text-blue-600 dark:text-blue-100
-  font-medium
-  text-xs;
-  }
-
-  .profile-link {
-    @apply flex items-center gap-2
-    text-sm
-    text-navbar;
   }
 }

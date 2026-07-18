@@ -88,7 +88,7 @@ export default function Events() {
             </svg>
             <input
               type="text"
-              placeholder="Pretražite događaje..."
+              placeholder="TEST PLACEHOLDER..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-4 py-2.5 border border-gray-300
