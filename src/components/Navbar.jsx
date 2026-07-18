@@ -3,11 +3,14 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { logout } from "../services/auth";
 
+import { useTheme } from "../context/ThemeContext";
+
 export default function Navbar() {
   const navigate = useNavigate();
   const { isLoggedIn, user, isOrganizer, isAdmin } = useAuth();
-
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { isDark, toggleTheme } = useTheme();
 
   async function handleLogout() {
     await logout();
@@ -15,44 +18,38 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white/90 border-b backdrop-blur-md border-gray-200 px-6 py-4 sticky top-0 z-50">
+    <nav
+      className="bg-white/90 dark:bg-gray-900 border-b backdrop-blur-md border-gray-200 
+    dark:border-gray-700 px-6 py-4 sticky top-0 z-50"
+    >
       <div className="max-w-6xl mx-auto flex items-center text-center justify-between">
         {/*Logo*/}
-        <Link to="/" className="text-xl font-bold text-blue-600">
+        <Link
+          to="/"
+          className="text-xl font-bold text-blue-600 dark:text-blue-400"
+        >
           Gatherly
         </Link>
 
         {/* Links */}
         <div className="hidden md:flex items-center gap-6">
-          <Link
-            to="/events"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
-          >
+          <Link to="/events" className="text-navbar">
             Pretraži događaje
           </Link>
 
           {isLoggedIn && (
-            <Link
-              to="/favourites"
-              className="text-gray-600 hover:text-blue-600 transition-colors"
-            >
+            <Link to="/favourites" className="text-navbar">
               Omiljeni
             </Link>
           )}
 
           {isOrganizer && (
-            <Link
-              to="/organizer"
-              className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
-            >
+            <Link to="/organizer" className="text-navbar">
               Moji događaji
             </Link>
           )}
           {isAdmin && (
-            <Link
-              to="admin"
-              className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
-            >
+            <Link to="admin" className="text-navbar">
               Admin panel
             </Link>
           )}
@@ -64,8 +61,7 @@ export default function Navbar() {
             <>
               <Link
                 to="/account"
-                className="flex items-center gap-2 text-sm text-gray-600
-                           hover:text-blue-600 transition-colors"
+                className="flex items-center gap-2 text-sm text-navbar"
               >
                 <div
                   className="w-7 h-7 rounded-full bg-blue-100 flex items-center
@@ -77,20 +73,18 @@ export default function Navbar() {
                   {user.displayName || user.email}
                 </span>
               </Link>
+
               <button
                 onClick={handleLogout}
                 className="text-sm border border-gray-300 px-4 py-2 rounded-lg
-             hover:bg-gray-50 transition-colors text-gray-600"
+             hover:bg-gray-50 transition-colors text-navbar"
               >
                 Odjavi se
               </button>
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="text-gray-600 hover:text-blue-600 transition-colors text-sm"
-              >
+              <Link to="/login" className="text-navbar">
                 Prijava
               </Link>
               <Link
@@ -101,12 +95,52 @@ export default function Navbar() {
               </Link>
             </>
           )}
+          <button
+            onClick={toggleTheme}
+            className="w-9 h-9 flex items-center justify-center rounded-xl
+                border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800
+                text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700
+                transition-colors"
+            title={isDark ? "Svijetli način" : "Tamni način"}
+          >
+            {isDark ? (
+              //sun
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"
+                />
+              </svg>
+            ) : (
+              //moon
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            )}
+          </button>
         </div>
 
         {/*Mobile menu button*/}
 
         <button
-          className="md:hidden text-gray-600 hover:text-blue-600"
+          className="md:hidden text-navbar"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? (
@@ -150,16 +184,13 @@ export default function Navbar() {
           <Link
             to="/events"
             onClick={() => setMenuOpen(false)}
-            className="text-sm text-gray-600 hover:text-blue-600 py-1"
+            className="text-sm text-navbar py-1"
           >
             Pretraži događaje
           </Link>
 
           {isLoggedIn && (
-            <Link
-              to="/favourites"
-              className="text-sm text-gray-600 hover:text-blue-600 transition-colors"
-            >
+            <Link to="/favourites" className="text-sm text-navbar">
               Omiljeni
             </Link>
           )}
@@ -168,7 +199,7 @@ export default function Navbar() {
             <Link
               to="/organizer"
               onClick={() => setMenuOpen(false)}
-              className="text-sm text-gray-600 hover:text-blue-600 py-1"
+              className="text-sm text-navbar py-1"
             >
               Moji događaji
             </Link>
@@ -177,7 +208,7 @@ export default function Navbar() {
             <Link
               to="/admin"
               onClick={() => setMenuOpen(false)}
-              className="text-sm text-gray-600 hover:text-blue-600 py-1"
+              className="text-sm text-navbar py-1"
             >
               Admin panel
             </Link>
@@ -187,13 +218,13 @@ export default function Navbar() {
               <Link
                 to="/account"
                 onClick={() => setMenuOpen(false)}
-                className="text-sm text-gray-600 hover:text-blue-600 py-1"
+                className="text-sm text-navbar py-1"
               >
                 Moj račun
               </Link>
               <button
                 onClick={handleLogout}
-                className="text-sm text-left text-red-500 hover:text-red-600 py-1"
+                className="text-sm text-left text-navbar py-1"
               >
                 Odjavi se
               </button>
@@ -203,7 +234,7 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setMenuOpen(false)}
-                className="text-sm text-gray-600 hover:text-blue-600 py-1"
+                className="text-sm text-navbar py-1"
               >
                 Prijava
               </Link>
