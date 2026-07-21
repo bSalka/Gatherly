@@ -246,7 +246,7 @@ export default function EventDetail() {
         <div className="relative z-10 max-w-6xl mx-auto px-4 pt-5 pb-8">
           {/*Nazad na događaje */}
           <Link
-            to="events"
+            to="/events"
             className="inline-flex items-center gap-1.5 text-sm
           text-white/70 hover:text-white transition-colors mb-5"
           >

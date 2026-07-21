@@ -42,12 +42,12 @@ export default function EventCard({ event }) {
   return (
     <Link
       to={`/events/${event.id}`}
-      className="group bg-white border border-gray-200 rounded-2xl
-  overflow-hidden hover:shadow-md hover:-translate-y-0.5
-  transition-all duration-200 flex flex-col"
+      className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+       rounded-2xl overflow-hidden hover:shadow-md dark:hover:shadow-gray-900 
+       hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
     >
       {/* Banner image*/}
-      <div className="relative h-44 bg-gray-100 overflow-hidden">
+      <div className="relative h-44 bg-gray-100 dark:bg-gray-700 overflow-hidden">
         {event.bannerURL ? (
           <img
             src={event.bannerURL}
@@ -58,7 +58,7 @@ export default function EventCard({ event }) {
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <svg
-              className="w-12 h-12 text-gray-300"
+              className="w-12 h-12 text-gray-300 dark:text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -85,14 +85,17 @@ export default function EventCard({ event }) {
       {/*Content */}
       <div className="p-4 flex flex-col flex-1">
         <h3
-          className="font-semibold text-gray-900 text-sm leading-snug
-        mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors"
+          className="font-semibold text-gray-900 dark:text-white text-sm leading-snug
+        mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
         >
           {event.title}
         </h3>
 
         {/*Date */}
-        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+        <div
+          className="flex items-center gap-1.5 text-xs text-gray-500 
+        dark:text-gray-300 mb-1"
+        >
           <svg
             className="w-3.5 h-3.5 shrink-0"
             fill="none"
@@ -110,7 +113,10 @@ export default function EventCard({ event }) {
         </div>
 
         {/*City*/}
-        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3">
+        <div
+          className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-300
+         mb-3"
+        >
           <svg
             className="w-3.5 h-3.5 shrink-0"
             fill="none"
@@ -133,15 +139,18 @@ export default function EventCard({ event }) {
           {event.city}
         </div>
 
-        {/*Price- pushed to bottom */}
+        {/*Price */}
         <div
-          className="mt-auto pt-3 border-t border-gray-100 flex
-      items-center justify-between"
+          className="mt-auto pt-3 border-t border-gray-100  dark:border-gray-700 
+        flex items-center justify-between"
         >
-          <span className="text-sm font-semibold text-blue-600">
+          <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
             {formatPrice(event.price)}
           </span>
-          <span className="text-xs text-gray-400 group-hover:text-blue-500 transition-colors">
+          <span
+            className="text-xs text-gray-400 group-hover:text-blue-500
+           dark:group-hover:text-blue-400 transition-colors"
+          >
             Više →
           </span>
         </div>

@@ -58,18 +58,23 @@ function TicketQRCode({ ticket }) {
 
   return (
     <div
-      className="bg-white border border-gray-100 rouned-xl p-4 flex
+      className="bg-white dark:bg-gray-200 border  
+      border-gray-100 dark:border-gray-400 rounded-xl p-4 flex
     flex-col items-center"
     >
       <span
-        className="bg-blue-100 text-blue-700 text-xs font-semibold px-3
+        className="bg-blue-100 dark:bg-blue-600
+         text-blue-700 dark:text-gray-100 text-xs font-semibold px-3
       py-1 rounded-full mb-3"
       >
         Karta {ticket.ticketNumber} od {ticket.totalTickets}
       </span>
+
+      {/*QR code */}
       <div
         ref={qrRef}
-        className="bg-white p-3 rounded-xl border border-gray-200 mb-2"
+        className="bg-white p-3 rounded-xl border border-gray-200
+         dark:border-gray-600 mb-2"
       >
         <QRCodeCanvas
           value={qrValue}
@@ -79,17 +84,19 @@ function TicketQRCode({ ticket }) {
         />
       </div>
       <p
-        className="font-mono text-xs text-gray-400 mb-2 text-center 
-    break-all px-1"
+        className="font-mono text-xs text-gray-400 dark:text-gray-600 
+        mb-2 text-center break-all px-1"
       >
         {ticket.id}
       </p>
+
       <button
         onClick={downloadQR}
         className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200
-      rounded-lg text-xs text-gray-500 hover:bg-gray-50 transition-colors"
+      rounded-lg text-xs text-gray-500 dark:text-gray-600 
+       hover:bg-blue-400 hover:text-gray-900
+        dark:hover:bg-blue-600 dark:hover:text-blue-100  transition-colors"
       >
-        {" "}
         <svg
           className="w-3 h-3"
           fill="none"
@@ -133,31 +140,37 @@ function BookingCard({ booking }) {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+    <div
+      className="bg-white dark:bg-gray-800 border 
+    border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden"
+    >
       {/*Booking info */}
       <div className="p-5">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex-1 min-w-0">
             <h3
-              className="font-semibold text-gray-900 text-sm 
-                    truncate mb-0.5"
+              className="font-semibold text-gray-900 dark:text-white 
+              text-sm truncate mb-0.5"
             >
               {booking.eventTitle}
             </h3>
-            <p>
+            <p className="text-xs text-gray-500 dark:text-gray-100">
               {booking.eventCity}
-              {booking.eventAddress ? `· ${booking.eventAddress}` : ""}
+              {booking.eventAddress ? ` · ${booking.eventAddress}` : ""}
             </p>
           </div>
           <span
-            className="bg-green-100 text-green-700 text-xs font-medium
-                           px-2.5 py-1 rounded-full shrink-0"
+            className="badge-success text-xs font-medium
+            px-2.5 py-1 rounded-full shrink-0"
           >
             Potvrđeno
           </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 text-xs text-gray-500 mb-4">
+        <div
+          className="grid grid-cols-2 gap-3 text-xs text-gray-500
+         dark:text-gray-100 mb-4"
+        >
           <div className="flex items-center gap-1.5">
             <svg
               className="w-3.5 h-3.5"
@@ -193,7 +206,7 @@ function BookingCard({ booking }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-sm font-bold text-blue-600">
+          <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
             {booking.totalPrice === 0
               ? "Besplatno"
               : `${booking.totalPrice} KM`}
@@ -202,8 +215,8 @@ function BookingCard({ booking }) {
           <button
             type="button"
             onClick={handleShowQR}
-            className="flex items-center gap-1.5 text-xs text-blue-600
-            hover:text-blue-700 font-medium transition-colors "
+            className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400
+            hover:text-blue-700 dark:hover:text-blue-200 font-medium transition-colors "
           >
             <svg
               className="w-3.5 h-3.5"
@@ -227,12 +240,15 @@ function BookingCard({ booking }) {
 
       {/*QR code  */}
       {showQR && (
-        <div className="border-t border-gray-100 bg-gray-50 p-5">
+        <div
+          className="border-t border-gray-100 dark:border-gray-700 
+        bg-gray-50 dark:bg-gray-900/50 p-5"
+        >
           {loadingTickets ? (
             <div className="flex justify-center py-4">
               <div
                 className="animate-spin w-6 h-6 border-2 border-blue-600
-                              border-t-transparent rounded-full"
+                border-t-transparent rounded-full"
               />
             </div>
           ) : tickets.length > 0 ? (
@@ -284,22 +300,24 @@ export default function Account() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Moj račun</h1>
-        <p className="text-gray-500 text-sm mt-0.5">{user.email}</p>
+        <h1 className="text-2xl font-bold text-primary">Moj račun</h1>
+        <p className="text-muted text-sm mt-0.5">{user.email}</p>
       </div>
 
       {/*Role badge */}
       {(userRole === "organizer" || userRole === "admin") && (
         <div
-          className="bg-blue-50 border border-blue-200 rounded-xl px-4
-        py-3 mb-6 flex items-center justify-between"
+          className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200
+        dark:border-blue-700 rounded-xl px-4 py-3 mb-6
+          flex items-center justify-between"
         >
           <p className="text-sm text-blue-700 font-medium">
             {userRole === "admin" ? "Admin nalog" : "Organizator nalog"}
           </p>
           <Link
             to={userRole === "admin" ? "/admin" : "/organizer"}
-            className="text-xs text-blue-600 hover:underline font-medium"
+            className="text-xs text-blue-700 hover:text-blue-700
+            dark:hover:text-blue-200 font-medium"
           >
             {userRole === "admin" ? "Admin panel →" : "Moji događaji →"}
           </Link>
@@ -307,49 +325,38 @@ export default function Account() {
       )}
 
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <h2 className="text-lg font-semibold text-primary mb-4">
           Moje rezervacije
         </h2>
 
-        {error && (
-          <div
-            className="bg-red-50 border border-red-200 text-red-600
-            rounded-xl px-4 py-3 text-sm mb-4"
-          >
-            {error}
-          </div>
-        )}
+        {error && <div className="alert-error mb-4">{error}</div>}
 
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-white border border-gray-200 rounded-2xl
-                    p-5 animate-pulse"
+                className="bg-white dark:bg-gray-800 border border-gray-200
+              dark:border-gray-700 rounded-2xl p-5 animate-pulse"
               >
-                <div className="h-4 bg-gray-200 rounded w-2/3 mb-2" />
-                <div className="h-3 bg-gray-100 rounded w-1/3 mb-4" />
-                <div className="h-3 bg-gray-100 rounded w-1/2" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-2" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-1/3 mb-4" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-1/2" />
               </div>
             ))}
           </div>
         ) : bookings.length === 0 ? (
           <div
-            className="text-center py-16 bg-white border border-gray-200
-            rounded-2xl"
+            className="text-center py-16 bg-white dark:bg-gray-800  
+            border border-gray-200 dark:border-gray-700 rounded-2xl"
           >
-            <h3 className="text-gray-700 font-semibold mb-1">
+            <h3 className="text-primary font-semibold mb-1">
               Nemate rezervacija
             </h3>
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-muted text-sm mb-4">
               Pronađite događaje i rezervišie karte
             </p>
-            <Link
-              to="/events"
-              className="bg-blue-600 text-white px-5 py-2.5 rounded-xl
-                text-sm font-medium hover:bg-blue-700 transition-colors"
-            >
+            <Link to="/events" className="btn-primary inline-block text-sm">
               Pretražite događaje
             </Link>
           </div>

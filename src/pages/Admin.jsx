@@ -32,7 +32,7 @@ function formatDate(timestamp) {
 }
 
 const STATUS_STYLES = {
-  pending: "bg-yellow-100 text-yellow-700",
+  pending: "bg-yellow-100  text-yellow-700",
   approved: "bg-green-100 text-green-700",
   rejected: "bg-red-100 text-red-600",
   cancelled: "bg-gray-100 text-gray-500",
@@ -182,8 +182,8 @@ export default function Admin() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       {/*Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Admin panel </h1>
-        <p className="text-gray-500 text-sm mt-0.5">
+        <h1 className="text-2xl font-bold text-primary">Admin panel </h1>
+        <p className="text-muted text-sm mt-0.5">
           Upravljajte platformom Gatherly
         </p>
       </div>
@@ -191,50 +191,52 @@ export default function Admin() {
       {/*Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {[
-          { label: "Svi događaji", value: totalEvents, color: "text-gray-900" },
+          {
+            label: "Svi događaji",
+            value: totalEvents,
+            color: "text-gray-900 dark:text-white",
+          },
           {
             label: "Na čekanju",
             value: pendingEvents,
-            color: "text-yellow-600",
+            color: "text-yellow-600 dark:text-yellow-400",
           },
-          { label: "Odobreni", value: approvedEvents, color: "text-green-600" },
-          { label: "Korisnici", value: totalUsers, color: "text-blue-600" },
+          {
+            label: "Odobreni",
+            value: approvedEvents,
+            color: "text-green-600 dark:text-green-400",
+          },
+          {
+            label: "Korisnici",
+            value: totalUsers,
+            color: "text-blue-600 dark:text-blue-400",
+          },
           {
             label: "Organizatori",
             value: organizers,
-            color: "text-purple-600",
+            color: "text-purple-600 dark:text-purple-400",
           },
         ].map((s) => (
           <div
             key={s.label}
-            className="bg-white border border-gray-200 rounded-2xl p-4"
+            className="bg-white dark:bg-gray-800 border
+             border-gray-200 dark:border-gray-700 rounded-2xl p-4"
           >
             <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
-            <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
+            <div className="text-xs text-muted mt-0.5">{s.label}</div>
           </div>
         ))}
       </div>
 
       {/*Success / errormessage */}
-      {success && (
-        <div
-          className="bg-green-50 border border-green-200 text-green-700
-      rounded-xl px-4 py-3 mb-4 text-sm"
-        >
-          {success}
-        </div>
-      )}
-      {error && (
-        <div
-          className="bg-red-50 border border-red-200 text-red-600
-        rounded-xl px-4 py-3 mb-4 text-sm"
-        >
-          {error}
-        </div>
-      )}
+      {success && <div className="alert-success mb-4 ">{success}</div>}
+      {error && <div className="alert-error mb-4 ">{error}</div>}
 
       {/*Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-6 w-fit">
+      <div
+        className="flex gap-1 bg-gray-100 dark:bg-gray-800
+       rounded-xl p-1 mb-6 w-fit"
+      >
         {[
           { id: "events", label: "Događaji" },
           { id: "users", label: "Korisnici" },
@@ -245,8 +247,8 @@ export default function Admin() {
             className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors
          ${
            tab === t.id
-             ? "bg-white text-gray-900 shadow-sm"
-             : "text-gray-500 hover:text-gray-700"
+             ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
+             : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
          }`}
           >
             {t.label}
@@ -280,7 +282,7 @@ export default function Admin() {
                    ${
                      eventFilter === f.value
                        ? "bg-blue-600 text-white border-blue-600"
-                       : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+                       : "bg-white dark:bg-gray-800 text-muted border border-gray-300 dark:border-gray-700"
                    }`}
               >
                 {f.label}
@@ -304,17 +306,17 @@ export default function Admin() {
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white border border-gray-200 rounded-2xl
-                    p-4 animate-pulse h-20"
+                  className="bg-white dark:bg-gray-800 border border-gray-200 
+                  dark:border-gray-700 rounded-2xl p-4 animate-pulse h-20"
                 />
               ))}
             </div>
           ) : filteredEvents.length === 0 ? (
             <div
-              className="text-center py-16 bg-white border border-gray-200
-            rounded-2xl"
+              className="text-center py-16 bg-white dark:bg-gray-800 border
+               border-gray-200 dark:border-gray-700 rounded-2xl"
             >
-              <p className="text-gray-500 text-sm">
+              <p className="text-muted text-sm">
                 Nema događaja u ovoj kategoriji
               </p>
             </div>
@@ -323,7 +325,8 @@ export default function Admin() {
               {filteredEvents.map((event) => (
                 <div
                   key={event.id}
-                  className="bg-white border border-gray-200 rounded-2xl p-4"
+                  className="bg-white dark:bg-gray-800 border 
+                  border-gray-200 dark:border-gray-700 rounded-2xl p-4"
                 >
                   {rejectingId === event.id && (
                     <div
@@ -331,23 +334,21 @@ export default function Admin() {
                     items-center justify-center p-4"
                     >
                       <div
-                        className="bg-white rounded-2xl p-6 
+                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 
                         max-w-sm w-full"
                       >
-                        <h3 className="font-semibold text-gray-900 mb-3">
+                        <h3 className="font-semibold text-primary mb-3">
                           Odbiti događaj
                         </h3>
-                        <p className="text-sm text-gray-500 mb-3">
-                          Opcionalno dodaajte razlog odbijanja
+                        <p className="text-sm text-secondary mb-3">
+                          Opcionalno dodajte razlog odbijanja
                         </p>
                         <textarea
                           value={rejectNote}
                           onChange={(e) => setRejectNote(e.target.value)}
                           placeholder="Razlog odbijanja..."
                           rows={3}
-                          className="w-full border border-gray-300 rounded-xl px-3
-                        py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-50
-                        resize-none mb-4"
+                          className="input resize-none mb-4"
                         />
                         <div className="flex gap-3">
                           <button
@@ -355,8 +356,7 @@ export default function Admin() {
                               setRejectingId(null);
                               setRejectNote("");
                             }}
-                            className="flex-1 border-gray-300 text-gray-600 py-2.5
-                        rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+                            className="btn-secondary py-2.5 flex-1 text-sm"
                           >
                             Odustani
                           </button>
@@ -378,7 +378,7 @@ export default function Admin() {
                   <div className="flex gap-4 items-start">
                     <div
                       className="w-16 h-14 rounded-xl overflow-hidden bg-gray-100
-                    shrink-0"
+                      dark:bg-gray-700 shrink-0"
                     >
                       {event.bannerURL ? (
                         <img
@@ -403,7 +403,7 @@ export default function Admin() {
                         mb-0.5 flex-wrap"
                       >
                         <h3
-                          className="font-medium text-gray-900 
+                          className="font-medium text-primary
                             text-sm truncate"
                         >
                           {event.title}
@@ -418,16 +418,14 @@ export default function Admin() {
                           {STATUS_LABELS[event.status] || "Na čekanju"}
                         </span>
                       </div>
-                      <p>
+                      <p className="text-secondary text-xs mt-1">
                         {event.city} {event.address ? `· ${event.address}` : ""}
                         {" · "}
                         {formatDate(event.startDate)}
                       </p>
-                      <p className="text-xs text-gray-400">
-                        Organizator: {event.organizerName}
-                      </p>
+
                       {event.adminNote && (
-                        <p className="text-xs text-red-500 mt-1">
+                        <p className="text-xs text-red-500 dark:text-red-500 mt-1">
                           Napomena:{event.adminNote}
                         </p>
                       )}
@@ -447,9 +445,11 @@ export default function Admin() {
                         <button
                           onClick={() => setRejectingId(event.id)}
                           disabled={actionLoading === event.id}
-                          className="text-xs border border-red-200 text-red-500
-                        px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors
-                        disabled:opacity-50"
+                          className="text-xs border border-red-200
+                        dark:border-red-700 text-red-500
+                        dark:text-red-500 px-3 py-1.5 rounded-lg
+                        hover:bg-red-50 dark:hover:bg-red-900/30
+                          transition-colors disabled:opacity-50"
                         >
                           Odbij
                         </button>
@@ -475,9 +475,11 @@ export default function Admin() {
                           <button
                             onClick={() => setRejectingId(event.id)}
                             disabled={actionLoading === event.id}
-                            className="text-xs border border-red-200 text-red-500
-                        px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors 
-                        disabled:opacity-50"
+                            className="text-xs border border-red-200
+                        dark:border-red-700 text-red-500
+                        dark:text-red-500 px-3 py-1.5 rounded-lg
+                        hover:bg-red-50 dark:hover:bg-red-900/30
+                          transition-colors disabled:opacity-50"
                           >
                             Odbij
                           </button>
@@ -500,8 +502,9 @@ export default function Admin() {
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white border border-gray-200 rounded-2xl
-                                p-4 animate-pulse h-16"
+                  className="bg-white dark:bg-gray-800
+                  border border-gray-200 dark:border-gray-700 rounded-2xl
+                  p-4 animate-pulse h-16"
                 />
               ))}
             </div>
@@ -510,22 +513,25 @@ export default function Admin() {
               {users.map((u) => (
                 <div
                   key={u.uid || u.id}
-                  className="bg-white border border-gray-200 rounded-2xl
-                p-4 flex items-center gap-4"
+                  className="bg-white dark:bg-gray-800 border border-gray-200
+                dark:border-gray-700 rounded-2xl p-4
+                  flex items-center gap-4"
                 >
                   {/*Avatar */}
                   <div
-                    className="w-9 h-9 rounded-full bg-blue-100 flex
-                items-center justify-center text-blue-600
-                font-semibold text-sm shrink-0"
+                    className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 
+                    flex items-center justify-center text-blue-600 dark:text-blue-400
+                    font-semibold text-sm shrink-0"
                   >
                     {(u.name || u.email || "?")[0].toUpperCase()}
                   </div>
+
+                  {/*Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-primary truncate">
                       {u.name || "—"}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                    <p className="text-xs text-muted truncate">{u.email}</p>
                   </div>
                   <span
                     className={`text-xs px-2.5 py-1 rounded-full
@@ -534,15 +540,18 @@ export default function Admin() {
                     {ROLE_LABELS[u.role] || "Posjetilac"}
                   </span>
 
+                  {/*Role select */}
                   {u.uid !== user.uid && (
                     <select
                       value={u.role || "visitor"}
                       disabled={roleLoading === u.uid}
                       onChange={(e) => handleRoleChange(u.uid, e.target.value)}
-                      className="text-xs border border-gray-300 rounded-lg
-                     px-2 py-1.5 bg-white text-gray-600
-                    focus:outline-none focus:ring-2
-                  focus:ring-blue-500 disabled:opacity-50"
+                      className="text-xs border border-gray-300
+                    dark:border-gray-600 rounded-lg px-2 py-1.5
+                    bg-white dark:bg-gray-700 text-gray-600
+                    dark:text-gray-200 focus:outline-none
+                      focus:ring-2 focus:ring-blue-500
+                      disabled:opacity-50 transition-colors"
                     >
                       <option value="visitor">Posjetilac</option>
                       <option value="organizer">Organizator</option>
@@ -551,7 +560,7 @@ export default function Admin() {
                   )}
 
                   {u.uid === user.uid && (
-                    <span className="text-xs text-gray-400 shrink-0">(Vi)</span>
+                    <span className="text-xs text-muted shrink-0">(Vi)</span>
                   )}
                 </div>
               ))}
