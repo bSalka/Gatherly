@@ -42,8 +42,8 @@ export default function EventCard({ event }) {
   return (
     <Link
       to={`/events/${event.id}`}
-      className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
-       rounded-2xl overflow-hidden hover:shadow-md dark:hover:shadow-gray-900 
+      className="group bg-white dark:bg-gray-800 border border-blue-600 dark:border-blue-400
+       rounded-2xl overflow-hidden hover:shadow-md dark:hover:shadow-blue-900 
        hover:-translate-y-0.5 transition-all duration-200 flex flex-col"
     >
       {/* Banner image*/}

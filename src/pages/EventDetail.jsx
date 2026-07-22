@@ -192,15 +192,14 @@ export default function EventDetail() {
   //loading skeleton
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 animate-pulse">
-        <div className="h-72 bg-gray-200 " />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 animate-pulse">
+        <div className="h-72 bg-gray-200  dark:bg-gray-800" />
         <div className="max-w-6xl mx-auto px-4 py-8 flex gap-8">
           <div className="flex-1 space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-2/3 " />
-            <div className="h-4 bg-gray-100 rounded w-1/3" />
-            <div className="h-32 bg-gray-100 rounded" />
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-2/3 " />
+            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded w-1/3" />
+            <div className="h-32 bg-gray-100 dark:bg-gray-700 rounded" />
           </div>
-          <div className="w-80 h-64 bg-gray-200 rounded-2xl shrink-0" />
         </div>
       </div>
     );
@@ -210,9 +209,12 @@ export default function EventDetail() {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-        {/*<div className="text-5xl mb-4"> 😕</div>*/}
-        <h2 className="text-xl font-semibold text-gray-700 mb-2">{error}</h2>
-        <Link to="/events" className="text-blue-600 hover:underline text-sm">
+        <h2 className="text-xl font-semibold text-primary mb-2">{error}</h2>
+        <Link
+          to="/events"
+          className="text-blue-600 dark:text-blue-400
+           hover:underline text-sm"
+        >
           Nazad na događaje
         </Link>
       </div>
@@ -220,12 +222,11 @@ export default function EventDetail() {
   }
   const cat = CATEGORY_LABELS[event.category] || CATEGORY_LABELS.other;
 
-  /////////////////////////////////////////////////
   return (
     /*Hero */
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      {/*Blurred  */}
       <div className="relative overflow-hidden bg-gray-900">
-        {/*Blurred  */}
         {event.bannerURL && (
           <div
             className="absolute inset-0 bg-cover bg-center scale-110"
@@ -286,7 +287,7 @@ export default function EventDetail() {
                   bg-gray-800"
                   >
                     <svg
-                      className="w-16 h-16 text-gray-400"
+                      className="w-16 h-16 text-muted"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -312,38 +313,27 @@ export default function EventDetail() {
             </div>
 
             {/*Right- ticket sidebar */}
-            {/*Right column- ticket sidebar */}
+
             <div className="w-full lg:w-72 shrink-0">
-              <div
-                className="bg-white border border-gray-200 rounded-2xl 
-             shadow-xl overflow-hidden"
-              >
+              <div className="card">
                 <div className="p-5">
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-semibold text-primary mb-1">
                     {tiers.length === 0 ? "Besplatan ulaz" : "Kupite kartu"}
                   </h3>
                   {tiers.length > 0 && (
-                    <p className="text-xs text-gray-400 mb-4">
+                    <p className="text-xs text-secondary mb-4">
                       Odaberite vrtu karte
                     </p>
                   )}
 
                   {/*Booking error */}
                   {bookingError && (
-                    <div
-                      className="bg-red-50 border border-red-200 text-red-600
-              rounded-lg px-3 py-2 text-xs mb-4"
-                    >
-                      {bookingError}
-                    </div>
+                    <div className="alert-error mb-4">{bookingError}</div>
                   )}
 
                   {/*Free event */}
                   {tiers.length === 0 && (
-                    <div
-                      className="bg-green-50 border border-green-200
-                rounded-xl p-3 mb-4 text-sm text-green-700"
-                    >
+                    <div className="alert-success mb-4 text-sm ">
                       Ovaj događaj je besplatan - samo se prijavite!
                     </div>
                   )}
@@ -371,37 +361,39 @@ export default function EventDetail() {
                          transition-all 
                              ${
                                soldOut
-                                 ? "border-gray-200 bg-gray-50 opacity-50 cursor-not-allowed"
+                                 ? "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 opacity-50 cursor-not-allowed"
                                  : isSelected
-                                   ? "border-blue-500 bg-blue-50 ring-2 ring-blue-100"
-                                   : "border-gray-200 hover:border-blue-300 "
+                                   ? "border-blue-500 bg-blue-50 dark:bg-gray-950/30 ring-2 ring-blue-100 dark:ring-blue-800"
+                                   : "border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500"
                              }`}
                           >
                             <div className="flex items-center justify-between mb-0.5">
-                              <span className="text-sm font-medium text-gray-800">
+                              <span className="text-sm font-medium text-primary">
                                 {tier.name}
                               </span>
-                              <span className="text-sm font-bold text-blue-600">
+                              <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
                                 {tier.price === 0
                                   ? "Besplatno"
                                   : `${tier.price} KM`}
                               </span>
                             </div>
                             {tier.description && (
-                              <p className="text-xs text-gray-400 mb-1">
+                              <p className="text-xs text-muted mb-1">
                                 {tier.description}
                               </p>
                             )}
 
                             <p
                               className={`text-xs font-medium ${
-                                soldOut ? "text-red-500" : "text-green-600"
+                                soldOut
+                                  ? "text-red-500 dark:text-red-400"
+                                  : "text-green-600 dark:text-green-400"
                               }`}
                             >
                               {soldOut ? "Rasprodano" : `${available} dostupno`}
 
                               {isSelected && (
-                                <span className=" text-blue-600 ml-2">
+                                <span className=" text-blue-600 dark:text-blue-400 ml-2">
                                   Odabrano
                                 </span>
                               )}
@@ -415,20 +407,22 @@ export default function EventDetail() {
                   {/*Quantity */}
                   {tiers.length > 0 && selectedTier && (
                     <div className="mb-4">
-                      <label className="block text-xs text-gray-500 mb-2">
+                      <label className="block text-xs text-muted mb-2">
                         Količina
                       </label>
                       <div className="flex items-center gap-3">
                         <button
                           type="button"
                           onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                          className="w-8 h-8 rounded-lg border border-gray-300 flex
-                          items-center justify-center text-gray-600 hover:bg-gray-50
-                          transition-colors font-medium"
+                          className="w-8 h-8 rounded-lg border border-gray-300
+                        dark:border-gray-600 flex items-center
+                          justify-center text-secondary
+                        hover:bg-gray-50 dark:hover:bg-gray-700
+                          font-medium transition-colors"
                         >
                           -
                         </button>
-                        <span className="text-sm font-semibold text-gray-900 w-6 text-center">
+                        <span className="text-sm font-semibold text-primary w-6 text-center">
                           {quantity}
                         </span>
                         <button
@@ -439,14 +433,13 @@ export default function EventDetail() {
                             setQuantity(Math.min(available, quantity + 1));
                           }}
                           className="w-8 h-8 rounded-lg border border-gray-300
-                          flex items-center justify-center text-gray-600
-                        hover:bg-gray-50 transition-colors font-medium"
+                        dark:border-gray-600 flex items-center
+                          justify-center text-secondary
+                        hover:bg-gray-50 dark:hover:bg-gray-700
+                          font-medium transition-colors"
                         >
                           +
                         </button>
-                        {/* <span className="text-xs text-gray-400 ml-1">
-                      max{selectedTier.quantity - (selectedTier.sold || 0)}
-                    </span> */}
                       </div>
                     </div>
                   )}
@@ -455,10 +448,10 @@ export default function EventDetail() {
                   {selectedTier && selectedTier.price > 0 && (
                     <div
                       className="flex items-center justify-between mb-4 py-3
-                      border-t border-gray-100"
+                      border-t border-gray-100 dark:border-gray-700"
                     >
-                      <span className="text-sm text-gray-500">Ukupno</span>
-                      <span className="text-lg font-bold text-gray-900">
+                      <span className="text-sm text-primary">Ukupno</span>
+                      <span className="text-lg font-bold text-primary">
                         {selectedTier.price * quantity} KM
                       </span>
                     </div>
@@ -468,9 +461,7 @@ export default function EventDetail() {
                   <button
                     onClick={handleBuyTicket}
                     disabled={booking}
-                    className="w-full bg-blue-600 text-white py-3 rounded-xl
-                    font-medium hover:bg-blue-700 
-                    transition-colors text-sm disabled:opacity-50"
+                    className="w-full btn-primary"
                   >
                     {booking ? (
                       <span className="flex items-center justify-center gap-2">
@@ -500,7 +491,7 @@ export default function EventDetail() {
                     ) : tiers.length === 0 ? (
                       "Prijavi se besplatno"
                     ) : selectedTier ? (
-                      `Kupi — ${
+                      `Kupi - ${
                         selectedTier.price === 0
                           ? "Besplatno"
                           : `${selectedTier.price * quantity} KM`
@@ -512,7 +503,7 @@ export default function EventDetail() {
 
                   {/*Hint za login */}
                   {!isLoggedIn && (
-                    <p className="text-sm text-gray-400 text-center mt-2">
+                    <p className="text-sm text-secondary text-center mt-2">
                       Potrebna je prijava za kupovinu karata.
                     </p>
                   )}
@@ -520,11 +511,12 @@ export default function EventDetail() {
 
                 {/*Secure purchase footer */}
                 <div
-                  className="bg-gray-50 border-t border-gray-100 px-5 py-3
-                  flex items-center justify-center gap-2"
+                  className="bg-gray-50 dark:bg-gray-700 border-t
+                   border-gray-100 dark:border-gray-700 px-5 py-3
+                  flex items-center justify-center rounded-xl gap-2"
                 >
                   <svg
-                    className="w-4 h-4 text-gray-400"
+                    className="w-4 h-4 text-muted"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -536,9 +528,7 @@ export default function EventDetail() {
                       d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                     />
                   </svg>
-                  <span className="text-xs text-gray-500">
-                    Sigurna kupovina
-                  </span>
+                  <span className="text-xs text-muted">Sigurna kupovina</span>
                 </div>
               </div>
             </div>
@@ -547,12 +537,11 @@ export default function EventDetail() {
       </div>
 
       {/*White section */}
-
       <div className="max-w-6xl mx-auto px-4  pb-16 mt-5">
         {/*Title */}
         <div className="flex items-start justify-between gap-4 mb-6">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">
+            <h1 className="text-2xl md:text-3xl font-bold text-primary mb-1">
               {event.title}
             </h1>
           </div>
@@ -568,8 +557,8 @@ export default function EventDetail() {
                     text-sm font-medium border transition-colors disabled:opacity-50
                     ${
                       isFav
-                        ? "bg-red-50 border-red-200 text-red-500"
-                        : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                        ? "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-700 text-red-500 dark:text-white dark:hover:bg-red-800"
+                        : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
             >
               <svg
@@ -593,9 +582,11 @@ export default function EventDetail() {
             {/*Share btn */}
             <button
               onClick={handleShare}
-              className="flex items-center gap-1.5 px-3 py-2 border
-                border-gray-300 rounded-xl text-sm text-gray-600 
-                hover:bg-gray-50 transition-colors bg-white"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl
+              text-sm font-medium border border-gray-300
+            dark:border-gray-600 bg-white dark:bg-gray-800
+            text-gray-600 dark:text-gray-300 hover:bg-gray-50
+            dark:hover:bg-gray-700 transition-colors"
             >
               <svg
                 className="w-4 h-4"
@@ -610,7 +601,7 @@ export default function EventDetail() {
                   d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
                 />
               </svg>
-              Podijeli
+              <span className="hidden sm:inline">Podijeli</span>
             </button>
           </div>
         </div>
@@ -618,50 +609,50 @@ export default function EventDetail() {
         {/*Info row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           {/*Date */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+          <div className="card rounded-xl p-4">
             <p
-              className="text-xs text-gray-400 mb-1 font-medium uppercase
+              className="text-xs text-primary mb-1 font-medium uppercase
                 tracking-wide"
             >
               Datum
             </p>
-            <p className="text-sm font-semibold text-gray-900">
+            <p className="text-sm font-semibold text-primary">
               {formatDate(event.startDate)}
             </p>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-secondarys mt-0.5">
               {formatTime(event.startDate)}
               {event.endDate && ` - ${formatTime(event.endDate)}`}
             </p>
           </div>
 
           {/*Location */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+          <div className="card rounded-xl p-4">
             <p
-              className="text-xs text-gray-400 mb-1.5 font-medium 
+              className="text-xs text-primary mb-1.5 font-medium 
                 uppercase tracking-wide"
             >
               Lokacija
             </p>
 
-            <p className="text-sm font-semibold text-gray-900">{event.city}</p>
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-sm font-semibold text-primary">{event.city}</p>
+            <p className="text-xs text-secondary mt-0.5">
               {event.address || ""}
             </p>
           </div>
 
           {/*Price */}
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+          <div className="card rounded-xl p-4">
             <p
-              className="text-xs text-gray-400 mb-1.5 font-medium uppercase 
+              className="text-xs text-primary mb-1.5 font-medium uppercase 
                 tracking-wide"
             >
               Cijena od
             </p>
-            <p className="text-sm font-semibold text-gray-800">
+            <p className="text-sm font-semibold text-primary">
               {formatPrice(event.price)}
             </p>
             {tiers.length > 0 && (
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-secondary mt-0.5">
                 {tiers.length}{" "}
                 {tiers.length === 1 ? "vrsta karte" : "vrste karata"}
               </p>
@@ -671,30 +662,30 @@ export default function EventDetail() {
 
         {/*Description */}
         <div className="mb-6">
-          <h2 className="text-base font-semibold text-gray-900 mb-3">
+          <h2 className="text-base font-semibold text-primary mb-3">
             O događaju
           </h2>
-          <p className="text-gray-600 leading-relaxed text-sm whitespace-pre-line">
+          <p className="text-secondary leading-relaxed text-sm whitespace-pre-line">
             {event.description}
           </p>
         </div>
 
         {/*Google Map btn */}
         {(event.address || event.city) && (
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+          <div className="card rounded-xl p-4">
             <p
-              className="text-xs text-gray-400 mb-2 font-medium uppercase
+              className="text-xs text-primary mb-2 font-medium uppercase
               tracking-wide"
             >
               Lokacija na mapi
             </p>
             <div className="flex items-center gap-3">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate">
+                <p className="text-sm font-medium text-primary truncate">
                   {event.address || event.city}
                 </p>
                 {event.address && (
-                  <p className="text-xs text-gray-500">{event.city}</p>
+                  <p className="text-xs text-secondary">{event.city}</p>
                 )}
               </div>
 
@@ -705,9 +696,11 @@ export default function EventDetail() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="shrink-0 flex items-center gap-1.5 px-4 py-2
-                    bg-white border border-gray-300 hover:bg-gray-100
-                     text-gray-700 text-sm font-medium rounded-lg 
-                     transition-colors "
+              bg-white dark:bg-gray-700 border border-gray-300
+              dark:border-gray-600 hover:bg-gray-100
+              dark:hover:bg-gray-600 text-gray-700
+              dark:text-gray-200 text-sm font-medium
+                rounded-lg transition-colors"
               >
                 <svg
                   className="w-4 h-4"

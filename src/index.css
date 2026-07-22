@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-white
+  @apply bg-white dark:bg-gray-950 text-gray-900 dark:text-white;
   transition:
     background-color 0.2s,
     color 0.2s;
@@ -34,12 +34,20 @@ body {
 
   .btn-secondary {
     @apply border border-gray-300 dark:border-gray-600
-           bg-white dark:bg-gray-800
-           text-gray-600 dark:text-gray-200
-           hover:bg-gray-50 dark:hover:bg-gray-700
-           px-4 py-2
-           rounded-lg
-           transition-colors;
+   bg-white dark:bg-gray-800
+   text-gray-600 dark:text-gray-200
+   hover:bg-gray-50 dark:hover:bg-gray-700
+     px-4 py-2
+     rounded-lg
+     transition-colors;
+  }
+
+  .btn-google {
+    @apply w-full flex items-center justify-center gap-3 border border-gray-300
+    rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-white
+     hover:bg-gray-50 dark:hover:bg-gray-800
+    transition-colors mb-4
+    disabled:opacity-50;
   }
 
   .btn-icon {
@@ -55,7 +63,7 @@ body {
   /*Cards*/
   .card {
     @apply bg-white dark:bg-gray-800 
-  border border-gray-200 dark:border-gray-700 rounded-xl;
+  border border-gray-200 dark:border-blue-400 rounded-xl;
   }
 
   .card-sm {
@@ -66,8 +74,8 @@ body {
   /*Input*/
   .input {
     @apply w-full border border-gray-300 dark:border-gray-600
-           bg-white  text-gray-900 dark:text-gray-900
-           placeholder-gray-400 dark:placeholder-gray-500
+           bg-white dark:bg-gray-900/30  text-gray-900 dark:text-gray-300
+           placeholder-gray-400 dark:placeholder-gray-300
            rounded-xl px-4 py-2.5 text-sm
            focus:outline-none focus:ring-2 focus:ring-blue-500
            focus:border-transparent
@@ -98,8 +106,7 @@ body {
   }
 
   .text-label {
-    @apply text-xs text-gray-400 dark:text-gray-500 font-medium
-    uppercase tracking-wide;
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1;
   }
 
   /*Dividers*/
@@ -133,7 +140,7 @@ body {
     @apply bg-red-50 dark:bg-red-900/30 
     border border-red-200 dark:border-red-700 
     text-red-600 dark:text-red-300
-    rounded-xl px-4 py-3 text-sm;
+    rounded-xl mb-1.5 px-4 py-3 text-sm;
   }
   .alert-success {
     @apply bg-green-50 dark:bg-green-900/30 

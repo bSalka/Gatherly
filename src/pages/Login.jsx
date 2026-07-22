@@ -69,35 +69,30 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm">
         {/*Header*/}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-blue-600">
-            Dobrodošli nazad{" "}
+          <Link to="/" className="text-2xl font-bold text-blue-600">
+            Gatherly
+          </Link>
+          <h1 className="text-2xl font-bold text-primary mt-4">
+            Dobrodošli nazad
           </h1>
-          <p className="text-gray-500 mt-2">
-            Prijavite se na svoj Gatherly račun
-          </p>
+          <p className="text-muted mt-2">Prijavite se na svoj Gatherly račun</p>
         </div>
 
         {/* Card*/}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overlow-hidden">
+        <div className="card">
           {/*Error*/}
           <div className="p-6">
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 rounded-lg px-3 mb-2.5 text-sm">
-                {error}
-              </div>
-            )}
+            {error && <div className="alert-error">{error}</div>}
 
             {/*Google btn */}
             <button
               onClick={handleGoogle}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 border border-gray-300
-              rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-4
-              disabled:opacity-50"
+              className="btn-google"
             >
               <svg width="18" height="18" viewBox="0 0 18 18">
                 <path
@@ -122,17 +117,15 @@ export default function Login() {
 
             {/*Divider */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex-1 border-t border-gray-200"></div>
-              <span className="text-xs text-gray-400">ili putem emaila</span>
-              <div className="flex-1 border-t border-gray-200"></div>
+              <div className="flex-1 divider"></div>
+              <span className="text-xs text-muted">ili putem emaila</span>
+              <div className="flex-1 divider"></div>
             </div>
 
             {/*Form*/}
             <form onSubmit={handleSubmit} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email adresa
-                </label>
+                <label className="text-label">Email adresa</label>
                 <input
                   type="email"
                   name="email"
@@ -140,20 +133,16 @@ export default function Login() {
                   value={form.email}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm 
-                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                  disabled:bg-gray-50 transition-colors"
+                  className="input"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Lozinka
-                  </label>
+                  <label className="text-label">Lozinka</label>
                   <Link
                     to="/forgot-password"
-                    className="text-xs text-blue-600 hover:underline"
+                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     Zaboravili ste lozinku?
                   </Link>
@@ -165,19 +154,14 @@ export default function Login() {
                   value={form.password}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-2.5
-                           text-sm focus:outline-none focus:ring-2
-                           focus:ring-blue-500 focus:border-transparent
-                           disabled:bg.gray-50 transition-colors"
+                  className="input"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-2.5 rounded-xl 
-                font-medium hover:bg-blue-700 sctive:bg-blue-800
-                transition-colors disabled:opacity-50 text-sm mt-1"
+                className="w-full btn-primary"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -210,14 +194,17 @@ export default function Login() {
           </div>
 
           {/*Footer link*/}
-          <div className="bg-gray-50 border-t border-gray-100 px-6 py-3 text-center">
-            <p className="text-center text-sm text-gray-500">
-              Nemate račun?{""}
+          <div
+            className="bg-gray-50 dark:bg-gray-800 border-t border-gray-100
+           dark:border-gray-700 px-6 py-3 text-center rounded-xl"
+          >
+            <p className="text-center text-sm text-secondary">
+              Nemate račun?
               <Link
                 to="/signup"
-                className="text-blue-600 hover:underline font-medium"
+                className="text-blue-600 dark:text-blue-400 ml-1 hover:underline font-medium"
               >
-                Regisrtujte se
+                Registrujte se
               </Link>
             </p>
           </div>

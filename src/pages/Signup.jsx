@@ -74,49 +74,37 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         {/*Header */}
         <div className="text-center mb-8">
           <Link to="/" className="text-2xl font-bold text-blue-600">
             Gatherly
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-4">
+          <h1 className="text-2xl font-bold text-primary mt-4">
             Kreirajte račun
           </h1>
-          <p className="text-gray-500 mt-1 text-sm">
-            Pridružite se i otkrijte događaje
-          </p>
+          <p className="text-muted mt-2 ">Pridružite se i otkrijte događaje</p>
         </div>
 
         {/*Card */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm">
+        <div className="card">
           <div className="p-8">
             {/*Success */}
             {success && (
-              <div
-                className="bg-green-50 border border-green-200 text-green-700
-          rounded-lg px-4 py-3 mb-6 text-sm text-center"
-              >
+              <div className="alert-success">
                 ✓ Račun kreiran! Preusmjeravamo vas...
               </div>
             )}
 
             {/*Error */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 rounded-lg px-4 py-3 mb-6 text-sm">
-                {error}
-              </div>
-            )}
+            {error && <div className="alert-error">{error}</div>}
 
             {/*Google btn */}
             <button
               onClick={handleGoogle}
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3
-                         border border-gray-300 rounded-xl px-4 py-3 text-sm
-                         font-medium text-gray-700 hover:bg-gray-50
-                         transition-colors disabled:opacity-50 mb-6"
+              className="btn-google"
             >
               <svg width="18" height="18" viewBox="0 0 18 18">
                 <path
@@ -141,19 +129,17 @@ export default function Signup() {
 
             {/*Divider */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex-1 border-t border-gray-200"></div>
-              <span className="text-xs text-gray-400">
+              <div className="flex-1 divider"></div>
+              <span className="text-xs text-muted">
                 ili se prijavite putem email
               </span>
-              <div className="flex-1 border-t border-gray-200"></div>
+              <div className="flex-1 divider"></div>
             </div>
 
             {/*Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Ime i prezime
-                </label>
+                <label className="text-label">Ime i prezime</label>
                 <input
                   name="name"
                   type="text"
@@ -161,17 +147,13 @@ export default function Signup() {
                   value={form.name}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 
-              text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 
-              focus:border-transparent"
+                  className="input"
                 />
               </div>
 
               {/*Email*/}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Email adresa
-                </label>
+                <label className="text-label">Email adresa</label>
                 <input
                   name="email"
                   type="email"
@@ -186,11 +168,8 @@ export default function Signup() {
                       setEmailError("");
                     }
                   }}
-                  className={`w-full border rounded-xl px-4 py-3 text-sm
-                           focus:outline-none focus:ring-2 focus:ring-blue-500
-                           focus:border-transparent disabled:bg-gray-50
-                           disabled:text-gray-400 transition-colors
-                           ${emailError ? "border-red-400" : "border-gray-300"}`}
+                  className={`input
+                  ${emailError ? "border-red-400" : "input"}`}
                 />
                 {emailError && (
                   <p className="text-xs text-red-500 mt-1">{emailError}</p>
@@ -199,9 +178,7 @@ export default function Signup() {
 
               {/*Password*/}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Lozinka
-                </label>
+                <label className="text-label">Lozinka</label>
                 <input
                   name="password"
                   type="password"
@@ -209,9 +186,7 @@ export default function Signup() {
                   value={form.password}
                   onChange={handleChange}
                   disabled={loading}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none
-             focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 
-             disabled:text-gray-400 transition-colors"
+                  className="input"
                 />
 
                 {/*Password hints*/}
@@ -221,7 +196,7 @@ export default function Signup() {
                     <div
                       className={`flex items-center gap-2 text-xs ${
                         form.password.length >= 6
-                          ? "text-green-600"
+                          ? "text-green-600 dark:text-green-400"
                           : "text-gray-400"
                       }`}
                     >
@@ -232,7 +207,7 @@ export default function Signup() {
                     <div
                       className={`flex items-center gap-2 text-xs ${
                         /[A-Za-z]/.test(form.password)
-                          ? "text-green-600"
+                          ? "text-green-600 dark:text-green-400"
                           : "text-gray-400"
                       }`}
                     >
@@ -242,7 +217,7 @@ export default function Signup() {
                     <div
                       className={`flex items-center gap-2 text-xs ${
                         /\d/.test(form.password)
-                          ? "text-green-600"
+                          ? "text-green-600 dark:text-green-400"
                           : "text-gray-400"
                       }`}
                     >
@@ -255,9 +230,7 @@ export default function Signup() {
 
               {/*Confirm password*/}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5 ">
-                  Potvrdite lozinku
-                </label>
+                <label className="text-label">Potvrdite lozinku</label>
                 <input
                   name="confirm"
                   type="password"
@@ -285,9 +258,7 @@ export default function Signup() {
               <button
                 type="submit"
                 disabled={loading || success}
-                className="w-full bg-blue-600 text-white py-3 rounded-xl
-                           font-medium hover:bg-blue-700 active:bg-blue-800
-                           transition-colors disabled:opacity-50 mt-2 text-sm"
+                className="w-full btn-primary"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -319,8 +290,8 @@ export default function Signup() {
             </form>
 
             {/*Footer link */}
-            <p className="text-center text-sm text-gray-500 mt-6">
-              Imate račun?{" "}
+            <p className="text-center text-sm text-muted mt-6">
+              Imate račun?
               <Link
                 to="/login"
                 className="text-blue-600 hover:underline font-medium"
