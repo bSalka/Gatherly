@@ -98,7 +98,7 @@ body {
   }
 
   .text-secondary {
-    @apply text-gray-600 dark:text-gray-300;
+    @apply text-gray-600 dark:text-gray-200;
   }
 
   .text-muted {

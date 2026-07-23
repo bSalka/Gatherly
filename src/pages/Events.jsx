@@ -61,20 +61,20 @@ export default function Events() {
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/*Page header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Događaji</h1>
-        <p className="text-gray-500 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-primary">Događaji</h1>
+        <p className="text-secondary text-sm mt-1">
           Pronađite događaje u vašem gradu
         </p>
       </div>
 
       {/*Filters */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-6">
+      <div className="card p-4 mb-6">
         <div className="flex flex-col md:flex-row gap-3">
           {/*Search*/}
           <div className="flex-1 relative">
             <svg
               className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4
-                            text-gray-400"
+                            text-muted"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -88,12 +88,10 @@ export default function Events() {
             </svg>
             <input
               type="text"
-              placeholder="TEST PLACEHOLDER..."
+              placeholder="Pretraži događaje..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 border border-gray-300
-              rounded-xl text-sm focus:outline-none focus:ring-2
-              focus:ring-blue-500 focus:border-transparent"
+              className="pl-9 input"
             />
           </div>
 
@@ -101,9 +99,7 @@ export default function Events() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="md:w-44 px-4 py-2.5 border border-gray-300 rounded-xl
-            text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 
-            bg-white text-gray-700"
+            className="md:w-44 input-select"
           >
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -115,8 +111,7 @@ export default function Events() {
           {/*City*/}
           <div className="relative md:w-40">
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4
-                            text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -139,9 +134,7 @@ export default function Events() {
               placeholder="Grad..."
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 border border-gray-300
-              rounded-xl text-sm focus:outline-none focus:ring-2
-              focus:ring-blue-500 focus:border-transparent"
+              className="pl-9 input"
             />
           </div>
 
@@ -149,9 +142,7 @@ export default function Events() {
           {hasFilters && (
             <button
               onClick={clearFilters}
-              className="px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700
-            border border-gray-300 rounded-xl hover:bg-gray-50
-            transition-colors whitespace-nowrap"
+              className="btn-secondary text-sm whitespace-nowrap"
             >
               Očisti filtere
             </button>
@@ -160,18 +151,11 @@ export default function Events() {
       </div>
 
       {/*Error*/}
-      {error && (
-        <div
-          className="bg-red-50 border border-red-200 text-red-600
-        rounded-xl px-4 py-3 mb-6 text-sm"
-        >
-          {error}
-        </div>
-      )}
+      {error && <div className="alert-error mb-6">{error}</div>}
 
       {/*Results count */}
       {!loading && !error && (
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-muted mb-4">
           {events.length === 0
             ? "Nema pronađenih događaja"
             : `${events.length} ${events.length === 1 ? "događaj" : "događaja"}`}
@@ -195,16 +179,17 @@ export default function Events() {
       {!loading && !error && events.length === 0 && (
         <div className="text-center py-16">
           <div className="text-5xl mb-4">🔍</div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">
+          <h3 className="text-lg font-semibold text-primary mb-2">
             Nema događaja
           </h3>
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-muted text-sm mb-4">
             Pokušajte promijeniti filtere ili pretražite drugi grad
           </p>
           {hasFilters && (
             <button
               onClick={clearFilters}
-              className="text-blue-600 text-sm hover:underline"
+              className="text-blue-600 dark:text-blue-400 text-sm
+               hover:underline"
             >
               Očisti filtere
             </button>

@@ -32,10 +32,8 @@ export default function Favourites() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Omiljeni događaji</h1>
-        <p className="text-gray-500 text-sm mt-0.5">
-          Događaji koje ste sačuvali
-        </p>
+        <h1 className="text-2xl font-bold text-primary">Omiljeni događaji</h1>
+        <p className="text-muted text-sm mt-0.5">Događaji koje ste sačuvali</p>
       </div>
 
       {loading ? (
@@ -45,16 +43,13 @@ export default function Favourites() {
           ))}
         </div>
       ) : events.length === 0 ? (
-        <div
-          className="text-center py-20 bg-white border border-gray-200
-        rounded-xl"
-        >
+        <div className="text-center py-20 card">
           <div
-            className="w-16 h-16 bg-gray-100 rounded-full flex items-center
-            justify-center mx-auto mb-4"
+            className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex
+             items-center justify-center mx-auto mb-4"
           >
             <svg
-              className="w-8 h-8 text-gray-400"
+              className="w-8 h-8 text-muted"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -67,7 +62,15 @@ export default function Favourites() {
               />
             </svg>
           </div>
-          <h3>Nemate omiljenih događaja</h3>
+          <h3 className="text-primary font-semibold mb-1">
+            Nemate omiljenih događaja
+          </h3>
+          <p className="text-muted text-sm mb-4">
+            Sačuvajte događaje koji vas zanimaju da ih lakše pronađete
+          </p>
+          <Link to="/events" className="btn-primary inline-block text-sm">
+            Pretražite događaje
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
