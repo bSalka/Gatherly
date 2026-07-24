@@ -224,15 +224,14 @@ export default function Organizer() {
       {/*Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Moji događaji</h1>
-          <p className="text-gray-500 text-sm mt-0.5">
+          <h1 className="text-2xl font-bold text-primary">Moji događaji</h1>
+          <p className="text-secondary text-sm mt-0.5">
             Upravljajte vašim događajima
           </p>
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 bg-blue-600 text-white
-          px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors
+          className="flex items-center gap-2 btn-primary
         "
         >
           <svg
@@ -255,29 +254,27 @@ export default function Organizer() {
       {/*Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { label: "Ukupno", value: total, color: "text-gray-900" },
-          { label: "Odobreni", value: approved, color: "text-green-600" },
-          { label: "Na čekanju", value: pending, color: "text-yellow-600" },
+          { label: "Ukupno", value: total, color: "text-primary" },
+          {
+            label: "Odobreni",
+            value: approved,
+            color: "text-green-600 dark:text-green-400",
+          },
+          {
+            label: "Na čekanju",
+            value: pending,
+            color: "text-yellow-600 dark:text-yellow-400",
+          },
         ].map((s) => (
-          <div
-            key={s.label}
-            className="bg-white border border-gray-200 rounded-2xl p-4"
-          >
+          <div key={s.label} className="card p-4">
             <div className={`text-2xl font-bold ${s.color}`}>{s.value}</div>
-            <div className={`text-xs text-gray-500 mt-0.5`}>{s.label}</div>
+            <div className={`text-xs text-muted mt-0.5`}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {/*Global error */}
-      {error && !showForm && (
-        <div
-          className="bg-red-50 border border-red-200 text-red-600 rounded-xl
-        px-4 py-3 mb-4 text-sm"
-        >
-          {error}
-        </div>
-      )}
+      {error && !showForm && <div className="alert-error mb-4 ">{error}</div>}
 
       {/*Event form modal */}
       {showForm && (
@@ -286,20 +283,21 @@ export default function Organizer() {
         justify-center p-4"
         >
           <div
-            className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh]
+            className="card w-full max-w-lg max-h-[90vh]
            overflow-y-auto"
           >
             {/*Modal header */}
             <div
               className="flex items-center justify-between p-6 border-b
-            border-gray-100"
+            border-gray-100 dark:border-gray-700"
             >
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-primary">
                 {editingEvent ? "Uredi događaj" : "Novi događaj"}
               </h2>
               <button
                 onClick={closeForm}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted hover:text-gray-600
+                transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -319,45 +317,25 @@ export default function Organizer() {
 
             {/*Modal body*/}
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              {error && (
-                <div
-                  className="bg-red-50 border border-red-200 text-red-600
-              rounded-lg px-3 py-2.5 text-sm"
-                >
-                  {error}
-                </div>
-              )}
-              {success && (
-                <div
-                  className="bg-green-50 border border-green-200
-              text-green-700 rounded-lg px-3 py-2.5 text-sm"
-                >
-                  {success}
-                </div>
-              )}
+              {error && <div className="alert-error">{error}</div>}
+              {success && <div className="alert-success">{success}</div>}
 
               {/*Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Naziv događaja *
-                </label>
+                <label className="text-label">Naziv događaja *</label>
                 <input
                   name="title"
                   value={form.title}
                   onChange={handleChange}
-                  placeholder="npr. Food Festival Sarajevo"
+                  placeholder="npr. Koncert"
                   disabled={submitting}
-                  className="w-full border border-gray-300 rounded-xl px-4
-                py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500
-                 focus:border-transparent disabled:bg-gray-50"
+                  className="input"
                 />
               </div>
 
               {/*Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Opis*
-                </label>
+                <label className="text-label">Opis*</label>
                 <textarea
                   name="description"
                   value={form.description}
@@ -365,26 +343,20 @@ export default function Organizer() {
                   placeholder="Opišite događaj..."
                   rows={3}
                   disabled={submitting}
-                  className="w-full border border-gray-300 rounded-xl px-4
-                 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500
-                 focus:border-transparent disabled:bg-gray-50 resize-none"
+                  className="input resize-none"
                 ></textarea>
               </div>
 
               {/*Category and city */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Kategorija
-                  </label>
+                  <label className="text-label">Kategorija</label>
                   <select
                     name="category"
                     value={form.category}
                     onChange={handleChange}
                     disabled={submitting}
-                    className="w-full border border-gray-300 rounded-xl px-4
-                    py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500
-                  bg-white disabled:bg-gray-50"
+                    className="input-select disabled:bg-gray-50"
                   >
                     {CATEGORIES.map((c) => (
                       <option key={c.value} value={c.value}>
@@ -395,88 +367,68 @@ export default function Organizer() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Grad*
-                  </label>
+                  <label className="text-label">Grad*</label>
                   <input
                     name="city"
                     value={form.city}
                     onChange={handleChange}
                     placeholder="npr. Sarajevo"
                     disabled={submitting}
-                    className="w-full border border-gray-300 rounded-xl px-4
-                    py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500
-                    focus:border-transparent disabled:bg-gray-50"
+                    className="input"
                   />
                 </div>
               </div>
 
               {/*address */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Adresa mjesta održavanja
-                </label>
+                <label className="text-label">Adresa mjesta održavanja</label>
                 <input
                   name="address"
                   value={form.address}
                   onChange={handleChange}
                   placeholder="npr. Ferhadija 1, Sarajevo"
                   disabled={submitting}
-                  className="w-full border border-gray-300 rounded-xl px-4
-                             py-2.5 text-sm focus:outline-none focus:ring-2
-                             focus:ring-blue-500 disabled:bg-gray-50"
+                  className="input"
                 />
               </div>
 
               {/*Start & end date */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Datum početka *
-                  </label>
+                  <label className="text-label">Datum početka *</label>
                   <input
                     name="startDate"
                     type="datetime-local"
                     value={form.startDate}
                     onChange={handleChange}
                     disabled={submitting}
-                    className="w-full border border-gray-300 rounded-xl 
-                    px-4 py-2.5 text-sm focus:outline-none focus:ring-2
-                    focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
+                    className="input"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Datum završetka
-                  </label>
+                  <label className="text-label">Datum završetka</label>
                   <input
                     name="endDate"
                     type="datetime-local"
                     value={form.endDate}
                     onChange={handleChange}
                     disabled={submitting}
-                    className="w-full border border-gray-300 rounded-xl px-4 py-2.5
-                    text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 
-                    focus:border-transparent disabled:bg-gray-50"
+                    className="input"
                   />
                 </div>
               </div>
 
               {/*Banneer URL */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL slike za banner
-                </label>
+                <label className="text-label">URL slike za banner</label>
                 <input
                   name="bannerURL"
                   value={form.bannerURL}
                   onChange={handleChange}
-                  placeholder="https://images.unsplash.com/..."
+                  placeholder="https://images.banner.com/..."
                   disabled={submitting}
-                  className="w-full border border-gray-300 rounded-xl px-4
-                 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500
-                 focus:border-transparent disabled:bg-gray-50"
+                  className="input"
                 />
 
                 {/*Preview */}
@@ -492,7 +444,7 @@ export default function Organizer() {
 
               {/*Ticket tiers */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-secondary mb-2">
                   Vrste karata
                 </label>
                 <TicketTierManager
@@ -507,17 +459,14 @@ export default function Organizer() {
                   type="button"
                   onClick={closeForm}
                   disabled={submitting}
-                  className="flex-1 border border-gray-300 text-gray-600
-                  py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors
-                  disabled:opacity-50"
+                  className="btn-secondary py-2.5 flex-1 text-sm disabled:opacity-50"
                 >
                   Odustani
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 bg-blue-600 text-white py-2.5 rounded-xl
-                  text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50"
+                  className="btn-primary flex-1"
                 >
                   {submitting
                     ? "Čuvanje..."
@@ -537,42 +486,41 @@ export default function Organizer() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="bg-white border border-gray-200 rounded-2xl p-4
-                            animate-pulse flex gap-4"
+              className="bg-white dark:bg-gray-800 border border-gray-200
+              dark:border-gray-700 rounded-2xl p-4
+              animate-pulse flex gap-4"
             >
-              <div className="w-20 h-16 bg-gray-200 rounded-xl shrink-0" />
+              <div
+                className="w-20 h-16 bg-gray-200 dark:bg-gray-700
+               rounded-xl shrink-0"
+              />
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-2/3" />
-                <div className="h-3 bg-gray-100 rounded w-1/3" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+                <div className="h-3 bg-gray-100  dark:bg-gray-700 rounded w-1/3" />
               </div>
             </div>
           ))}
         </div>
       ) : events.length === 0 ? (
-        <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl">
+        <div
+          className="text-center py-16 bg-white dark:bg-gray-800 border border-gray-200
+        dark:border-gray-700 rounded-2xl"
+        >
           <div className="text-5xl mb-3">📭</div>
-          <h3 className="text-gray-700 font-semibold mb-1">Nemate događaja </h3>
-          <p className="text-gray-400 text-sm mb-4">
+          <h3 className="text-primary font-semibold mb-1">Nemate događaja </h3>
+          <p className="text-secondary text-sm mb-4">
             Kreirajte vaš prvi događaj
           </p>
-          <button
-            onClick={openCreate}
-            className="bg-blue-600 text-white px-5
-            py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors"
-          >
+          <button onClick={openCreate} className="btn-primary">
             Kreiraj događaj
           </button>
         </div>
       ) : (
         <div className="space-y-3">
           {events.map((event) => (
-            <div
-              key={event.id}
-              className="bg-white border border-gray-200 rounded-2xl
-                p-4 flex gap-4 items-center"
-            >
+            <div key={event.id} className="card p-4 flex gap-4 items-center">
               {/*Banner thumbnail */}
-              <div className="w-20 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+              <div className="w-20 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 shrink-0">
                 {event.bannerURL ? (
                   <img
                     src={event.bannerURL}
@@ -582,7 +530,7 @@ export default function Organizer() {
                 ) : (
                   <div
                     className="w-full h-full flex items-center
-                                  justify-center text-gray-300 text-2xl"
+                    justify-center text-muted text-2xl"
                   >
                     🎉
                   </div>
@@ -592,7 +540,7 @@ export default function Organizer() {
               {/*Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                  <h3 className="font-medium text-gray-900 text-sm truncate">
+                  <h3 className="font-medium text-primary text-sm truncate">
                     {event.title}
                   </h3>
                   <span
@@ -602,7 +550,7 @@ export default function Organizer() {
                     {STATUS_LABELS[event.status] || "Na čekanju"}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted">
                   {event.city} · {formatDate(event.startDate)} ·{" "}
                   {event.price === 0 ? "Besplatno" : `${event.price} KM`}
                 </p>
@@ -612,15 +560,15 @@ export default function Organizer() {
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => openEdit(event)}
-                  className="text-xs border border-gray-300 text-gray-600
-                    px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="btn-secondary px-3 py-1.5 text-xs"
                 >
                   Uredi
                 </button>
                 <button
                   onClick={() => setDeleteConfirm(event.id)}
-                  className="text-xs border border-red-200 text-red-500 px-3 py-1.5
-                  rounded-lg hover:bg-red-50 transition-colors"
+                  className="text-xs border border-red-200 dark:border-red-700
+                  text-red-500 dark:text-red-400 px-3 py-1.5
+                  rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
                 >
                   Obriši
                 </button>
@@ -636,19 +584,17 @@ export default function Organizer() {
           className="fixed inset-0 bg-black/50 z-50 flex items-center
         justify-center p-4"
         >
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="font-semibold text-gray-900 mb-2">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full">
+            <h3 className="font-semibold text-primary mb-2">
               Obrisati događaj
             </h3>
-            <p className="text-sm text-gray-500 mb-5">
+            <p className="text-sm text-secondary mb-5">
               Ova akcija se ne može poništiti.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 border border-gray-300 text-gray-600
-                py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 
-                transition-colors"
+                className="btn-secondary flex-1 py-2.5 text-sm "
               >
                 Odustani
               </button>

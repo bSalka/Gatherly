@@ -151,7 +151,7 @@ export default function TicketTierManager({ tiers, onChange }) {
             />
             {tier.maxPerUser && (
               <p className="text-xs text-gray-400 mt-1">
-                Jedan korisnik može kuoiti najviše {tier.maxPerUser} karte za
+                Jedan korisnik može kupiti najviše {tier.maxPerUser} karte za
                 ovaj događaj.
               </p>
             )}

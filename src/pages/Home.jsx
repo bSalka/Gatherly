@@ -86,7 +86,7 @@ export default function Home() {
             </span>
 
             <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-              Pronađite savršen{" "}
+              Pronađite savršen
               <span className="block text-blue-200">događaj za vas</span>
             </h1>
 
@@ -103,7 +103,7 @@ export default function Home() {
               <div className="flex-1 relative">
                 <svg
                   className="absolute left-3.5 top-1/2 -translate-y-1/2
-                                w-4 h-4 text-gray-400"
+                  w-4 h-4 text-secondary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -120,16 +120,10 @@ export default function Home() {
                   placeholder="Pretražite događaje..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3.5 rounded-xl text-gray-900
-                  text-sm focus:outline-none focus:ring-2 focus:ring-white/50 placeholder-gray-400"
+                  className="w-full pl-10 input"
                 />
               </div>
-              <button
-                type="submit"
-                className="bg-white text-blue-600 font-medium px-5 py-3.5
-                rounded-xl hover:bg-blue-50 transition-colors
-               text-sm whitespace-nowrap"
-              >
+              <button type="submit" className="btn-primary">
                 Pretraži
               </button>
             </form>
@@ -138,20 +132,20 @@ export default function Home() {
 
         {/*Divider */}
         <div
-          className="h-12 bg-gray-50"
+          className="h-12 bg-gray-50 dark:bg-gray-950"
           style={{ clipPath: "ellipse(55% 100% at 50% 100%)" }}
         ></div>
       </section>
 
       {/*Categories */}
-      <section className="bg-gray-50 py-10">
+      <section className=" py-10">
         <div className="max-w-6xl mx-auto px-4">
           <div
             className="flex flex-col sm:flex-row sm:items-center
           justify-between gap-4 mb-6"
           >
             <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
+              <h2 className="text-2xl font-semibold text-primary mb-4 text-center">
                 Nadolazeći događaji
               </h2>
             </div>
@@ -160,8 +154,8 @@ export default function Home() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-xl
-              text-sm bg-white text-gray-700 focus:outline-none
+                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl
+              text-sm bg-white dark:bg-gray-800 text-secondary focus:outline-none
               focus:ring-2 focus:ring-blue-500"
               >
                 {CATEGORIES.map((c) => (
@@ -174,7 +168,7 @@ export default function Home() {
               <div className="relative">
                 <svg
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4
-                            text-gray-400"
+                  text-secondary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -199,9 +193,7 @@ export default function Home() {
                   onChange={(e) => {
                     setSelectedCity(e.target.value);
                   }}
-                  className="px-3 py-2 pl-9 border border-gray-300 rounded-xl text-sm
-                  bg-white text-gray-700 focus:outline-none focus:ring-2
-                  focus:ring-blue-500 w-40"
+                  className="px-3 py-2 pl-9 input"
                 />
               </div>
             </div>
@@ -220,15 +212,15 @@ export default function Home() {
 
           {/*No events */}
           {!loading && featuredEvents.length === 0 && (
-            <div className="text-center py-12 text-gray-400 text-sm">
+            <div className="text-center py-12 text-muted text-sm">
               Nema dostupnih događaja
             </div>
           )}
         </div>
       </section>
 
-      {/*section 3 recenice */}
-      <section className="bg-white py-12">
+      {/*section- 3 recenice */}
+      <section className=" py-12">
         <div className="max-w-5xl mx-auto px-4">
           <div
             className="flex flex-col md:flex-row items-center
@@ -236,32 +228,32 @@ export default function Home() {
           >
             {/*1 */}
             <div className="flex-1 text-center px-8 py-4">
-              <p className="text-gray-700 font-medium text-base leading-relaxed">
+              <p className="text-primary font-medium text-base leading-relaxed">
                 Otkrij događaje koji će upotpuniti tvoje slobodno vrijeme.
               </p>
             </div>
 
             {/*Divider */}
-            <div className="hidden md:block w-px h-20 bg-gray-400 shrink-0" />
+            <div className="hidden md:block w-px h-20 bg-gray-400 dark:bg-gray-700 shrink-0" />
             {/*Mobile divider */}
-            <div className="md:hidden w-30 h-px bg-gray-400 my-2" />
+            <div className="md:hidden w-30 h-px bg-gray-400 dark:bg-gray-700 my-2" />
 
             {/*2 */}
             <div className="flex-1 text-center px-8 py-4">
-              <p className="text-gray-700 font-medium text-base leading-relaxed">
+              <p className="text-primary font-medium text-base leading-relaxed">
                 Od koncerata i festivala do edukativnih i sportskih
                 manifestacija - sve što tražiš nalazi se na jednom mjestu.
               </p>
             </div>
 
             {/*Divider */}
-            <div className="hidden md:block w-px h-20 bg-gray-400 shrink-0" />
+            <div className="hidden md:block w-px h-20 bg-gray-400 dark:bg-gray-700 shrink-0" />
             {/*Mobile divider */}
-            <div className="md:hidden w-30 h-px bg-gray-400 my-2" />
+            <div className="md:hidden w-30 h-px bg-gray-400 dark:bg-gray-700 my-2" />
 
             {/*3 */}
             <div className="flex-1 text-center px-8 py-4">
-              <p className="text-gray-700 font-medium text-base leading-relaxed">
+              <p className="text-primary font-medium text-base leading-relaxed">
                 Prati najnovija dešavanja, rezerviši ulaznice u nekoliko klikova
                 i uživaj u iskustvima koja se pamte.
               </p>
