@@ -17,6 +17,14 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
+//helper- converts timestamp to JSdate
+function toDate(timestamp) {
+  if (!timestamp) return null;
+  if (timestamp.toDate) return timestamp.toDate();
+  if (timestamp.seconds) return new Date(timestamp.seconds * 1000);
+  return new Date(timestamp);
+}
+
 export async function getEvents(filters = {}) {
   let q = query(
     collection(db, "events"),
@@ -26,6 +34,14 @@ export async function getEvents(filters = {}) {
 
   const snap = await getDocs(q);
   let events = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+
+  //filter out paast events for public
+  const now = new Date();
+  events = events.filter((e) => {
+    const date = toDate(e.startDate);
+    if (!date) return true;
+    return date >= now;
+  });
 
   //client side filter
   if (filters.category) {

@@ -31,14 +31,43 @@ const emptyForm = {
   tiers: [],
 };
 
+//check if event is in the past
+function isPastEvent(timestamp) {
+  if (!timestamp) return false;
+  const date = timestamp.toDate
+    ? timestamp.toDate()
+    : timestamp.seconds
+      ? new Date(timestamp.seconds * 1000)
+      : new Date(timestamp);
+  return date < new Date();
+}
+
 function formatDate(timestamp) {
   if (!timestamp) return "-";
-  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-  return date.toLocaleDateString("bs-BA", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  try {
+    const date = timestamp.toDate
+      ? timestamp.toDate()
+      : timestamp.seconds
+        ? new Date(timestamp.seconds * 1000)
+        : new Date(timestamp);
+    const months = [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "maj",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "okt",
+      "nov",
+      "dec",
+    ];
+    return `${date.getDate()}. ${months[date.getMonth()]} ${date.getFullYear()}`;
+  } catch {
+    return "-";
+  }
 }
 
 const STATUS_STYLES = {
@@ -46,6 +75,7 @@ const STATUS_STYLES = {
   approved: "bg-green-100 text-green-700",
   rejected: "bg-red-100 text-red-600",
   cancelled: "bg-gray-100 text-gray-500",
+  finished: "bg-gray-100 text-gray-400",
 };
 
 const STATUS_LABELS = {
@@ -53,6 +83,7 @@ const STATUS_LABELS = {
   approved: "Odobren",
   rejected: "Odbijen",
   cancelled: "Otkazano",
+  finished: "Završeno",
 };
 
 export default function Organizer() {
@@ -517,64 +548,82 @@ export default function Organizer() {
         </div>
       ) : (
         <div className="space-y-3">
-          {events.map((event) => (
-            <div key={event.id} className="card p-4 flex gap-4 items-center">
-              {/*Banner thumbnail */}
-              <div className="w-20 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 shrink-0">
-                {event.bannerURL ? (
-                  <img
-                    src={event.bannerURL}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="w-full h-full flex items-center
+          {events.map((event) => {
+            const past = isPastEvent(event.startDate);
+
+            return (
+              <div
+                key={event.id}
+                className={`bg-white dark:bg-gray-800 border
+                               border-gray-200 dark:border-gray-700
+                               rounded-2xl p-4 flex gap-4 items-center
+                               ${past ? "opacity-50" : ""}`}
+              >
+                {/*Banner thumbnail */}
+                <div className="w-20 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 shrink-0">
+                  {event.bannerURL ? (
+                    <img
+                      src={event.bannerURL}
+                      alt={event.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full flex items-center
                     justify-center text-muted text-2xl"
-                  >
-                    🎉
-                  </div>
-                )}
-              </div>
-
-              {/*Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                  <h3 className="font-medium text-primary text-sm truncate">
-                    {event.title}
-                  </h3>
-                  <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0
-                    ${STATUS_STYLES[event.status] || STATUS_STYLES.pending}`}
-                  >
-                    {STATUS_LABELS[event.status] || "Na čekanju"}
-                  </span>
+                    >
+                      🎉
+                    </div>
+                  )}
                 </div>
-                <p className="text-xs text-muted">
-                  {event.city} · {formatDate(event.startDate)} ·{" "}
-                  {event.price === 0 ? "Besplatno" : `${event.price} KM`}
-                </p>
-              </div>
 
-              {/*Actions */}
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => openEdit(event)}
-                  className="btn-secondary px-3 py-1.5 text-xs"
-                >
-                  Uredi
-                </button>
-                <button
-                  onClick={() => setDeleteConfirm(event.id)}
-                  className="text-xs border border-red-200 dark:border-red-700
+                {/*Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                    <h3 className="font-medium text-primary text-sm truncate">
+                      {event.title}
+                    </h3>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0
+                    ${
+                      past
+                        ? STATUS_STYLES.finished
+                        : STATUS_STYLES[event.status] || STATUS_STYLES.pending
+                    }`}
+                    >
+                      {past
+                        ? STATUS_LABELS.finished
+                        : STATUS_LABELS[event.status] || "Na čekanju"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted">
+                    {event.city} · {formatDate(event.startDate)} ·{" "}
+                    {event.price === 0 ? "Besplatno" : `${event.price} KM`}
+                  </p>
+                </div>
+
+                {/*Actions */}
+                <div className="flex items-center gap-2 shrink-0">
+                  {!past && (
+                    <button
+                      onClick={() => openEdit(event)}
+                      className="btn-secondary px-3 py-1.5 text-xs"
+                    >
+                      Uredi
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setDeleteConfirm(event.id)}
+                    className="text-xs border border-red-200 dark:border-red-700
                   text-red-500 dark:text-red-400 px-3 py-1.5
                   rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
-                >
-                  Obriši
-                </button>
+                  >
+                    Obriši
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

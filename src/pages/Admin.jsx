@@ -31,6 +31,17 @@ function formatDate(timestamp) {
   }
 }
 
+//check if event is past
+function isPastEvent(timestamp) {
+  if (!timestamp) return false;
+  const date = timestamp.toDate()
+    ? timestamp.toDate()
+    : timestamp.seconds
+      ? new Date(timestamp.seconds * 1000)
+      : new Date(timestamp);
+  return date < new Date();
+}
+
 const STATUS_STYLES = {
   pending: "bg-yellow-100  text-yellow-700",
   approved: "bg-green-100 text-green-700",
@@ -43,6 +54,7 @@ const STATUS_LABELS = {
   approved: "Odobren",
   rejected: "Odbijen",
   cancelled: "Otkazan",
+  finished: "Završeno",
 };
 
 const ROLE_STYLES = {
@@ -169,7 +181,11 @@ export default function Admin() {
   const filteredEvents =
     eventFilter === "all"
       ? events
-      : events.filter((e) => e.status === eventFilter);
+      : eventFilter === "finished"
+        ? events.filter((e) => isPastEvent(e.startDate))
+        : events.filter(
+            (e) => isPastEvent(e.startDate) && e.status === eventFilter,
+          );
 
   //stats
   const totalEvents = events.length;
@@ -272,6 +288,7 @@ export default function Admin() {
               { value: "pending", label: "Na čekanju" },
               { value: "approved", label: "Odobreni" },
               { value: "rejected", label: "Odbijeni" },
+              { value: "finished", label: "Završeni" },
               { value: "all", label: "Svi" },
             ].map((f) => (
               <button
@@ -322,156 +339,137 @@ export default function Admin() {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredEvents.map((event) => (
-                <div
-                  key={event.id}
-                  className="bg-white dark:bg-gray-800 border 
-                  border-gray-200 dark:border-gray-700 rounded-2xl p-4"
-                >
-                  {rejectingId === event.id && (
-                    <div
-                      className="fixed inset-0 bg-black/50 z-50 flex
+              {filteredEvents.map((event) => {
+                const past = isPastEvent(event.startDate);
+
+                return (
+                  <div
+                    key={event.id}
+                    className={`bg-white dark:bg-gray-800 border
+                border-gray-200 dark:border-gray-700
+                  rounded-2xl p-4
+                  ${past ? "opacity-50" : ""}`}
+                  >
+                    {/*Reject modal */}
+                    {rejectingId === event.id && (
+                      <div
+                        className="fixed inset-0 bg-black/50 z-50 flex
                     items-center justify-center p-4"
-                    >
-                      <div
-                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 
-                        max-w-sm w-full"
                       >
-                        <h3 className="font-semibold text-primary mb-3">
-                          Odbiti događaj
-                        </h3>
-                        <p className="text-sm text-secondary mb-3">
-                          Opcionalno dodajte razlog odbijanja
-                        </p>
-                        <textarea
-                          value={rejectNote}
-                          onChange={(e) => setRejectNote(e.target.value)}
-                          placeholder="Razlog odbijanja..."
-                          rows={3}
-                          className="input resize-none mb-4"
-                        />
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => {
-                              setRejectingId(null);
-                              setRejectNote("");
-                            }}
-                            className="btn-secondary py-2.5 flex-1 text-sm"
-                          >
-                            Odustani
-                          </button>
-                          <button
-                            onClick={() => handleReject(event.id)}
-                            disabled={actionLoading === event.id}
-                            className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm
-                        font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-                          >
-                            {actionLoading === event.id
-                              ? "Odbijanje..."
-                              : "Odbij"}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex gap-4 items-start">
-                    <div
-                      className="w-16 h-14 rounded-xl overflow-hidden bg-gray-100
-                      dark:bg-gray-700 shrink-0"
-                    >
-                      {event.bannerURL ? (
-                        <img
-                          src={event.bannerURL}
-                          alt={event.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
                         <div
-                          className="w-full h-full flex items-center justify-center 
-                      text-2xl"
+                          className="bg-white dark:bg-gray-800 rounded-2xl p-6 
+                        max-w-sm w-full"
                         >
-                          🎉
+                          <h3 className="font-semibold text-primary mb-3">
+                            Odbiti događaj
+                          </h3>
+                          <p className="text-sm text-secondary mb-3">
+                            Opcionalno dodajte razlog odbijanja
+                          </p>
+                          <textarea
+                            value={rejectNote}
+                            onChange={(e) => setRejectNote(e.target.value)}
+                            placeholder="Razlog odbijanja..."
+                            rows={3}
+                            className="input resize-none mb-4"
+                          />
+                          <div className="flex gap-3">
+                            <button
+                              onClick={() => {
+                                setRejectingId(null);
+                                setRejectNote("");
+                              }}
+                              className="btn-secondary py-2.5 flex-1 text-sm"
+                            >
+                              Odustani
+                            </button>
+                            <button
+                              onClick={() => handleReject(event.id)}
+                              disabled={actionLoading === event.id}
+                              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm
+                        font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                            >
+                              {actionLoading === event.id
+                                ? "Odbijanje..."
+                                : "Odbij"}
+                            </button>
+                          </div>
                         </div>
-                      )}
-                    </div>
-
-                    {/*  info */}
-                    <div className="flex-1 min-w-0">
-                      <div
-                        className="flex items-center gap-2
-                        mb-0.5 flex-wrap"
-                      >
-                        <h3
-                          className="font-medium text-primary
-                            text-sm truncate"
-                        >
-                          {event.title}
-                        </h3>
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded-full
-                         font-medium shrink-0
-                         ${
-                           STATUS_STYLES[event.status] || STATUS_STYLES.pending
-                         }`}
-                        >
-                          {STATUS_LABELS[event.status] || "Na čekanju"}
-                        </span>
-                      </div>
-                      <p className="text-secondary text-xs mt-1">
-                        {event.city} {event.address ? `· ${event.address}` : ""}
-                        {" · "}
-                        {formatDate(event.startDate)}
-                      </p>
-
-                      {event.adminNote && (
-                        <p className="text-xs text-red-500 dark:text-red-500 mt-1">
-                          Napomena:{event.adminNote}
-                        </p>
-                      )}
-                    </div>
-
-                    {/*Actions */}
-                    {event.status === "pending" && (
-                      <div className="flex gap-2 shrink-0">
-                        <button
-                          onClick={() => handleApprove(event.id)}
-                          disabled={actionLoading === event.id}
-                          className="text-xs bg-green-600 text-white px-3 py-1.5 
-                        rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-                        >
-                          {actionLoading === event.id ? "..." : "Odobri"}
-                        </button>
-                        <button
-                          onClick={() => setRejectingId(event.id)}
-                          disabled={actionLoading === event.id}
-                          className="text-xs border border-red-200
-                        dark:border-red-700 text-red-500
-                        dark:text-red-500 px-3 py-1.5 rounded-lg
-                        hover:bg-red-50 dark:hover:bg-red-900/30
-                          transition-colors disabled:opacity-50"
-                        >
-                          Odbij
-                        </button>
                       </div>
                     )}
 
-                    {/*Review rejected and approved events */}
-                    {(event.status === "approved" ||
-                      event.status === "rejected") && (
-                      <div className="flex gap-2 shrink-0">
-                        {event.status === "rejected" && (
+                    <div className="flex gap-4 items-start">
+                      <div
+                        className="w-16 h-14 rounded-xl overflow-hidden bg-gray-100
+                      dark:bg-gray-700 shrink-0"
+                      >
+                        {event.bannerURL ? (
+                          <img
+                            src={event.bannerURL}
+                            alt={event.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div
+                            className="w-full h-full flex items-center justify-center 
+                      text-2xl"
+                          >
+                            🎉
+                          </div>
+                        )}
+                      </div>
+
+                      {/*  info */}
+                      <div className="flex-1 min-w-0">
+                        <div
+                          className="flex items-center gap-2
+                        mb-0.5 flex-wrap"
+                        >
+                          <h3
+                            className="font-medium text-primary
+                            text-sm truncate"
+                          >
+                            {event.title}
+                          </h3>
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0
+                          ${
+                            past
+                              ? STATUS_STYLES.finished
+                              : STATUS_STYLES[event.status] ||
+                                STATUS_STYLES.pending
+                          }`}
+                          >
+                            {past
+                              ? STATUS_LABELS.finished
+                              : STATUS_LABELS[event.status] || "Na čekanju"}
+                          </span>
+                        </div>
+                        <p className="text-secondary text-xs mt-1">
+                          {event.city}{" "}
+                          {event.address ? `· ${event.address}` : ""}
+                          {" · "}
+                          {formatDate(event.startDate)}
+                        </p>
+
+                        {event.adminNote && (
+                          <p className="text-xs text-red-500 dark:text-red-500 mt-1">
+                            Napomena:{event.adminNote}
+                          </p>
+                        )}
+                      </div>
+
+                      {/*Actions */}
+                      {!past && event.status === "pending" && (
+                        <div className="flex gap-2 shrink-0">
                           <button
                             onClick={() => handleApprove(event.id)}
                             disabled={actionLoading === event.id}
-                            className="text-xs bg-green-600 text-white px-3 py-1.5
-                            rounded-lg hover:bg-green-700 transition-colors 
-                            disabled:opacity-50"
+                            className="text-xs bg-green-600 text-white px-3 py-1.5 
+                        rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                           >
-                            Odobri
+                            {actionLoading === event.id ? "..." : "Odobri"}
                           </button>
-                        )}
-                        {event.status === "approved" && (
                           <button
                             onClick={() => setRejectingId(event.id)}
                             disabled={actionLoading === event.id}
@@ -483,12 +481,43 @@ export default function Admin() {
                           >
                             Odbij
                           </button>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      )}
+
+                      {/*Review rejected and approved events */}
+                      {((!past && event.status === "approved") ||
+                        event.status === "rejected") && (
+                        <div className="flex gap-2 shrink-0">
+                          {event.status === "rejected" && (
+                            <button
+                              onClick={() => handleApprove(event.id)}
+                              disabled={actionLoading === event.id}
+                              className="text-xs bg-green-600 text-white px-3 py-1.5
+                            rounded-lg hover:bg-green-700 transition-colors 
+                            disabled:opacity-50"
+                            >
+                              Odobri
+                            </button>
+                          )}
+                          {event.status === "approved" && (
+                            <button
+                              onClick={() => setRejectingId(event.id)}
+                              disabled={actionLoading === event.id}
+                              className="text-xs border border-red-200
+                        dark:border-red-700 text-red-500
+                        dark:text-red-500 px-3 py-1.5 rounded-lg
+                        hover:bg-red-50 dark:hover:bg-red-900/30
+                          transition-colors disabled:opacity-50"
+                            >
+                              Odbij
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
