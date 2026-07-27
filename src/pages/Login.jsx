@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { loginWithEmail, loginWithGoogle } from "../services/auth";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isLoggedIn } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -12,6 +14,12 @@ export default function Login() {
   // redirect na mjesto prije logina
   //(npr. pokušaj kupovine karte, poslati ih opet tu nakon logina)
   const from = location.state?.from || "/";
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate(from || "/", { replace: true });
+    }
+  });
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,7 +35,6 @@ export default function Login() {
     try {
       setLoading(true);
       await loginWithEmail(form.email, form.password);
-      navigate(from || "/", { replace: true });
     } catch (err) {
       switch (err.code) {
         case "auth/user-not-found":
@@ -60,7 +67,6 @@ export default function Login() {
     try {
       setLoading(true);
       await loginWithGoogle();
-      navigate(from || "/", { replace: true });
     } catch (err) {
       setError("Google prijava nije uspjela. Pokušajte ponovo.");
     } finally {
