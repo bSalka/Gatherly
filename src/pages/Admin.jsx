@@ -43,10 +43,13 @@ function isPastEvent(timestamp) {
 }
 
 const STATUS_STYLES = {
-  pending: "bg-yellow-100  text-yellow-700",
-  approved: "bg-green-100 text-green-700",
-  rejected: "bg-red-100 text-red-600",
-  cancelled: "bg-gray-100 text-gray-500",
+  pending:
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  approved:
+    "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  rejected: "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300",
+  cancelled: "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400",
+  finished: "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500",
 };
 
 const STATUS_LABELS = {
@@ -91,6 +94,17 @@ export default function Admin() {
     fetchEvents();
     fetchUsers();
   }, []);
+
+  function closeRejectModal() {
+    setRejectingId(null);
+    setRejectNote("");
+  }
+
+  function handleRejectBackdropClick(e) {
+    if (e.target === e.currentTarget) {
+      closeRejectModal();
+    }
+  }
 
   async function fetchEvents() {
     try {
@@ -355,6 +369,7 @@ export default function Admin() {
                       <div
                         className="fixed inset-0 bg-black/50 z-50 flex
                     items-center justify-center p-4"
+                        onClick={handleRejectBackdropClick}
                       >
                         <div
                           className="bg-white dark:bg-gray-800 rounded-2xl p-6 

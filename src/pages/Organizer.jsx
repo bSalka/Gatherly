@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   getOrganizerEvents,
@@ -71,11 +71,13 @@ function formatDate(timestamp) {
 }
 
 const STATUS_STYLES = {
-  pending: "bg-yellow-100 text-yellow-700",
-  approved: "bg-green-100 text-green-700",
-  rejected: "bg-red-100 text-red-600",
-  cancelled: "bg-gray-100 text-gray-500",
-  finished: "bg-gray-100 text-gray-400",
+  pending:
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
+  approved:
+    "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  rejected: "bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300",
+  cancelled: "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400",
+  finished: "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500",
 };
 
 const STATUS_LABELS = {
@@ -98,9 +100,17 @@ export default function Organizer() {
   const [success, setSuccess] = useState("");
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
+  const modalRef = useRef(null);
+
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  function handleBackdropClick(e) {
+    if (e.target === e.currentTarget) {
+      closeForm();
+    }
+  }
 
   async function fetchEvents() {
     try {
@@ -245,7 +255,6 @@ export default function Organizer() {
     }
   }
 
-  //Stats
   const total = events.length;
   const approved = events.filter((e) => e.status === "approved").length;
   const pending = events.filter((e) => e.status === "pending").length;
@@ -312,6 +321,7 @@ export default function Organizer() {
         <div
           className="fixed inset-0 bg-black/50 z-50 flex items-center
         justify-center p-4"
+          onClick={handleBackdropClick}
         >
           <div
             className="card w-full max-w-lg max-h-[90vh]
@@ -632,6 +642,9 @@ export default function Organizer() {
         <div
           className="fixed inset-0 bg-black/50 z-50 flex items-center
         justify-center p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setDeleteConfirm(null);
+          }}
         >
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full">
             <h3 className="font-semibold text-primary mb-2">

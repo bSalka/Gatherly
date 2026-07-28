@@ -17,6 +17,10 @@ export default function Navbar() {
     navigate("/");
   }
 
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
   return (
     <nav
       className="bg-white/90 dark:bg-gray-900 border-b backdrop-blur-md border-gray-200 
@@ -168,19 +172,19 @@ export default function Navbar() {
       {/*Mobile menu*/}
       {menuOpen && (
         <div
-          className="md:hidden border-t border-gray-100 mt-4 pt-4 pb-2 
-        flex flex-col gap-3 px-2"
+          className="md:hidden border-t border-gray-100 dark:border-gray-700
+          mt-4 pt-4 pb-2 flex flex-col gap-3 px-2"
         >
-          <Link
-            to="/events"
-            onClick={() => setMenuOpen(false)}
-            className="mobile-nav-link"
-          >
+          <Link to="/events" onClick={closeMenu} className="mobile-nav-link">
             Pretraži događaje
           </Link>
 
           {isLoggedIn && (
-            <Link to="/favourites" className="mobile-nav-link">
+            <Link
+              to="/favourites"
+              onClick={closeMenu}
+              className="mobile-nav-link"
+            >
               Omiljeni
             </Link>
           )}
@@ -188,18 +192,14 @@ export default function Navbar() {
           {isOrganizer && (
             <Link
               to="/organizer"
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenu}
               className="mobile-nav-link"
             >
               Moji događaji
             </Link>
           )}
           {isAdmin && (
-            <Link
-              to="/admin"
-              onClick={() => setMenuOpen(false)}
-              className="mobile-nav-link"
-            >
+            <Link to="/admin" onClick={closeMenu} className="mobile-nav-link">
               Admin panel
             </Link>
           )}
@@ -207,7 +207,7 @@ export default function Navbar() {
             <>
               <Link
                 to="/account"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMenu}
                 className="mobile-nav-link"
               >
                 Moj račun
@@ -221,16 +221,12 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                onClick={() => setMenuOpen(false)}
-                className="mobile-nav-link"
-              >
+              <Link to="/login" onClick={closeMenu} className="mobile-nav-link">
                 Prijava
               </Link>
               <Link
                 to="/signup"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMenu}
                 className="btn-primary text-sm text-center"
               >
                 Registracija

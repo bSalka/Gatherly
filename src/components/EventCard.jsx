@@ -29,12 +29,33 @@ function formatPrice(price) {
 }
 
 const CATEGORY_LABELS = {
-  music: { label: "Muzika", color: "bg-purple-100 text-purple-700" },
-  sports: { label: "Sport", color: "bg-green-100 text-green-700" },
-  food: { label: "Hrana", color: "bg-orange-100 text-orange-700" },
-  art: { label: "Kultura", color: "bg-pink-100 text-pink-700" },
-  tech: { label: "Tech", color: "bg-blue-100 text-blue-700" },
-  other: { label: "Ostalo", color: "bg-gray-100 text-gray-600" },
+  music: {
+    label: "Muzika",
+    color:
+      "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  },
+  sports: {
+    label: "Sport",
+    color:
+      "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  },
+  food: {
+    label: "Hrana",
+    color:
+      "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+  },
+  art: {
+    label: "Kultura",
+    color: "bg-pink-100 text-pink-700 dark:bg-pink-900 dark:text-pink-300",
+  },
+  tech: {
+    label: "Tech",
+    color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  },
+  other: {
+    label: "Ostalo",
+    color: "bg-gray-100 text-gray-600 dark:bg-gray-900/40 dark:text-white",
+  },
 };
 
 export default function EventCard({ event }) {
