@@ -49,7 +49,7 @@ export default function Navbar() {
 
           {isOrganizer && (
             <Link to="/organizer" className="text-navbar">
-              Moji događaji
+              Organizator panel
             </Link>
           )}
           {isAdmin && (
@@ -195,7 +195,7 @@ export default function Navbar() {
               onClick={closeMenu}
               className="mobile-nav-link"
             >
-              Moji događaji
+              Organizator panel
             </Link>
           )}
           {isAdmin && (

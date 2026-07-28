@@ -6,20 +6,32 @@ import { useAuth } from "../context/AuthContext";
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, userRole } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // redirect na mjesto prije logina
   //(npr. pokušaj kupovine karte, poslati ih opet tu nakon logina)
-  const from = location.state?.from || "/";
+  const explicitFrom = location.state?.from;
 
   useEffect(() => {
-    if (isLoggedIn) {
-      navigate(from || "/", { replace: true });
+    if (!isLoggedIn) return;
+
+    let target = explicitFrom;
+
+    if (!target) {
+      if (userRole === "admin") {
+        target = "/admin";
+      } else if (userRole === "organizer") {
+        target = "/organizer";
+      } else {
+        target = "/";
+      }
     }
-  });
+
+    navigate(target, { replace: true });
+  }, [isLoggedIn, userRole, explicitFrom, navigate]);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });

@@ -264,7 +264,7 @@ export default function Organizer() {
       {/*Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Moji događaji</h1>
+          <h1 className="text-2xl font-bold text-primary">Organizator panel</h1>
           <p className="text-secondary text-sm mt-0.5">
             Upravljajte vašim događajima
           </p>
