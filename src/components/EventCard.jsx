@@ -39,8 +39,8 @@ const CATEGORY_LABELS = {
     color:
       "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
   },
-  food: {
-    label: "Hrana",
+  festival: {
+    label: "Festival",
     color:
       "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
   },

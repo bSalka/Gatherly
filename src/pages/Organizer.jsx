@@ -13,7 +13,7 @@ import TicketTierManager from "../components/TicketTierManager";
 const CATEGORIES = [
   { value: "music", label: " Muzika" },
   { value: "sports", label: " Sport" },
-  { value: "food", label: " Hrana" },
+  { value: "festival", label: "Festival" },
   { value: "art", label: " Kultura" },
   { value: "tech", label: " Tech" },
   { value: "other", label: " Ostalo" },
