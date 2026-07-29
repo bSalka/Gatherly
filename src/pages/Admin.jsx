@@ -159,12 +159,20 @@ export default function Admin() {
       await updateEventStatus(eventId, "rejected", rejectNote);
       setEvents(
         events.map((e) =>
-          e.id === eventId ? { ...e, status: "rejected" } : e,
+          e.id === eventId
+            ? { ...e, status: "rejected", adminNote: rejectNote }
+            : e,
         ),
       );
+      //close modal
+      setRejectingId(null);
+      setRejectNote("");
+      setSuccess("Događaj dobijen");
+      setTimeout(() => setSuccess(""), 1500);
     } catch (err) {
       console.error(err);
       setError("Greška pri odbijanju.");
+      setRejectingId(null);
     } finally {
       setActionLoading(null);
     }
@@ -197,14 +205,14 @@ export default function Admin() {
       ? events
       : eventFilter === "finished"
         ? events.filter((e) => isPastEvent(e.startDate))
-        : events.filter(
-            (e) => isPastEvent(e.startDate) && e.status === eventFilter,
-          );
+        : events.filter((e) => e.status === eventFilter);
 
   //stats
   const totalEvents = events.length;
   const pendingEvents = events.filter((e) => e.status === "pending").length;
-  const approvedEvents = events.filter((e) => e.status === "pending").length;
+  const approvedEvents = events.filter(
+    (e) => e.status === "approved" && !isPastEvent(e.startDate),
+  ).length;
   const totalUsers = users.length;
   const organizers = users.filter((u) => u.role === "organizer").length;
 
@@ -317,20 +325,65 @@ export default function Admin() {
                    }`}
               >
                 {f.label}
-                {f.value !== "all" && (
-                  <span className="ml-1.5 opacity-70">
-                    (
-                    {
-                      events.filter((e) =>
-                        f.value === "all" ? true : e.status === f.value,
-                      ).length
-                    }
-                    )
-                  </span>
-                )}
+                <span className="ml-1.5 opacity-70">
+                  (
+                  {f.value === "all"
+                    ? events.length
+                    : f.value === "finished"
+                      ? events.filter((e) => isPastEvent(e.startDate)).length
+                      : events.filter((e) => e.status === f.value).length}
+                  )
+                </span>
               </button>
             ))}
           </div>
+          {/*Rejecting modal*/}
+          {rejectingId && (
+            <div
+              className="fixed inset-0 bg-black/50 z-50 flex
+                    items-center justify-center p-4"
+              onClick={handleRejectBackdropClick}
+            >
+              <div
+                className="bg-white dark:bg-gray-800 rounded-2xl p-6 
+                        max-w-sm w-full"
+              >
+                <h3 className="font-semibold text-primary mb-3">
+                  Odbiti događaj
+                </h3>
+                <p className="text-sm text-secondary mb-3">
+                  Opcionalno dodajte razlog odbijanja
+                </p>
+                <textarea
+                  value={rejectNote}
+                  onChange={(e) => setRejectNote(e.target.value)}
+                  placeholder="Razlog odbijanja..."
+                  rows={3}
+                  className="input resize-none mb-4"
+                />
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setRejectingId(null);
+                      setRejectNote("");
+                    }}
+                    className="btn-secondary flex-1 text-sm"
+                  >
+                    Odustani
+                  </button>
+                  <button
+                    onClick={() => handleReject(rejectingId)}
+                    disabled={actionLoading === rejectingId}
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white
+                               py-2.5 rounded-xl text-sm font-medium
+                               transition-colors disabled:opacity-50"
+                  >
+                    {actionLoading === rejectingId ? "Odbijanje..." : "Odbij"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {eventsLoading ? (
             <div className="space-y-3">
@@ -364,55 +417,6 @@ export default function Admin() {
                   rounded-2xl p-4
                   ${past ? "opacity-50" : ""}`}
                   >
-                    {/*Reject modal */}
-                    {rejectingId === event.id && (
-                      <div
-                        className="fixed inset-0 bg-black/50 z-50 flex
-                    items-center justify-center p-4"
-                        onClick={handleRejectBackdropClick}
-                      >
-                        <div
-                          className="bg-white dark:bg-gray-800 rounded-2xl p-6 
-                        max-w-sm w-full"
-                        >
-                          <h3 className="font-semibold text-primary mb-3">
-                            Odbiti događaj
-                          </h3>
-                          <p className="text-sm text-secondary mb-3">
-                            Opcionalno dodajte razlog odbijanja
-                          </p>
-                          <textarea
-                            value={rejectNote}
-                            onChange={(e) => setRejectNote(e.target.value)}
-                            placeholder="Razlog odbijanja..."
-                            rows={3}
-                            className="input resize-none mb-4"
-                          />
-                          <div className="flex gap-3">
-                            <button
-                              onClick={() => {
-                                setRejectingId(null);
-                                setRejectNote("");
-                              }}
-                              className="btn-secondary py-2.5 flex-1 text-sm"
-                            >
-                              Odustani
-                            </button>
-                            <button
-                              onClick={() => handleReject(event.id)}
-                              disabled={actionLoading === event.id}
-                              className="flex-1 bg-red-500 text-white py-2.5 rounded-xl text-sm
-                        font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
-                            >
-                              {actionLoading === event.id
-                                ? "Odbijanje..."
-                                : "Odbij"}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
                     <div className="flex gap-4 items-start">
                       <div
                         className="w-16 h-14 rounded-xl overflow-hidden bg-gray-100
@@ -468,8 +472,8 @@ export default function Admin() {
                         </p>
 
                         {event.adminNote && (
-                          <p className="text-xs text-red-500 dark:text-red-500 mt-1">
-                            Napomena:{event.adminNote}
+                          <p className="text-xs text-red-500 mt-1">
+                            Napomena: {event.adminNote}
                           </p>
                         )}
                       </div>

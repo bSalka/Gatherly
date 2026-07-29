@@ -258,6 +258,7 @@ export default function Organizer() {
   const total = events.length;
   const approved = events.filter((e) => e.status === "approved").length;
   const pending = events.filter((e) => e.status === "pending").length;
+  const rejected = events.filter((e) => e.status === "rejected").length;
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
@@ -292,7 +293,7 @@ export default function Organizer() {
       </div>
 
       {/*Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-4 gap-3 mb-6">
         {[
           { label: "Ukupno", value: total, color: "text-primary" },
           {
@@ -304,6 +305,11 @@ export default function Organizer() {
             label: "Na čekanju",
             value: pending,
             color: "text-yellow-600 dark:text-yellow-400",
+          },
+          {
+            label: "Odbijeni",
+            value: rejected,
+            color: "text-red-600 dark:text-red-400",
           },
         ].map((s) => (
           <div key={s.label} className="card p-4">
