@@ -17,9 +17,9 @@ export default function Footer() {
             na jednom mjestu.
           </p>
 
-          <div className="flex gap-6 text-sm text-gray-500 mt-2">
+          <div className="flex gap-6 text-sm text-muted mt-2">
             <Link to="/events" className="text-navbar ">
-              Istražite događaje
+              Pretražite događaje
             </Link>
             <Link to="/login" className="text-navbar">
               Prijava

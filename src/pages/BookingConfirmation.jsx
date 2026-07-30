@@ -131,10 +131,12 @@ export default function BookingConfirmation() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const qrRef = useRef(null);
-  const [emailSent, setEmailSent] = useState(false);
+  const emailSentRef = useRef(false);
 
   useEffect(() => {
-    async function fetchBooking() {
+    emailSentRef.current = false;
+
+    async function fetchData() {
       try {
         const snap = await getDoc(doc(db, "bookings", bookingId));
         if (snap.exists()) {
@@ -144,16 +146,16 @@ export default function BookingConfirmation() {
           const ticketData = await getBookingTickets(bookingId);
           setTickets(ticketData);
 
-          if (!emailSent)
-            try {
-              await sendBookingConfirmation({
-                booking: bookingData,
-                tickets: ticketData,
-              });
-              console.log("Email sent!");
-            } catch (emailErr) {
-              console.error("Email failed:", emailErr);
-            }
+          if (!emailSentRef.current) emailSentRef.current = true;
+          try {
+            await sendBookingConfirmation({
+              booking: bookingData,
+              tickets: ticketData,
+            });
+            console.log("Email sent!");
+          } catch (emailErr) {
+            console.error("Email failed:", emailErr);
+          }
         }
       } catch (err) {
         console.error(err);
@@ -161,7 +163,7 @@ export default function BookingConfirmation() {
         setLoading(false);
       }
     }
-    fetchBooking();
+    fetchData();
   }, [bookingId]);
 
   if (loading) {

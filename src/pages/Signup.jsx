@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { registerWithEmail, loginWithGoogle } from "../services/auth";
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -7,6 +7,9 @@ const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 
 export default function Signup() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.sate?.from || "/";
+
   const initialForm = { name: "", email: "", password: "", confirm: "" };
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
@@ -64,8 +67,9 @@ export default function Signup() {
   async function handleGoogle() {
     try {
       setLoading(true);
+      setError("");
       await loginWithGoogle();
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       setError("Google prijava nije uspjela. Pokušajte ponovo.");
     } finally {
