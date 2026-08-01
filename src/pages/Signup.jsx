@@ -8,7 +8,7 @@ const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
 export default function Signup() {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.sate?.from || "/";
+  const from = location.state?.from || "/";
 
   const initialForm = { name: "", email: "", password: "", confirm: "" };
   const [form, setForm] = useState(initialForm);
@@ -52,7 +52,7 @@ export default function Signup() {
       setForm(initialForm);
       setSuccess(true);
 
-      setTimeout(() => navigate("/"));
+      setTimeout(() => navigate(from, { replace: true }), 1000);
     } catch (err) {
       if (err.code === "auth/email-already-in-use") {
         setError("Račun sa ovom email adrsom već postoji.");

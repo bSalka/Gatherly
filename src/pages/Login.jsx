@@ -220,6 +220,7 @@ export default function Login() {
               Nemate račun?
               <Link
                 to="/signup"
+                state={{ from: explicitFrom }}
                 className="text-blue-600 dark:text-blue-400 ml-1 hover:underline font-medium"
               >
                 Registrujte se
