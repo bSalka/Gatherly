@@ -108,7 +108,43 @@ export default function EventDetail() {
         const firstAvailable = tierData.find(
           (t) => t.quantity - (t.sold || 0) > 0,
         );
-        if (firstAvailable) setSelectedTier(firstAvailable);
+
+        const savedPurchase = sessionStorage.getItem("pendingPurchase");
+
+        if (savedPurchase) {
+          try {
+            const purchase = JSON.parse(savedPurchase);
+
+            if (purchase.eventId === id) {
+              const savedTier = tierData.find(
+                (tier) => tier.id === purchase.tierId,
+              );
+
+              if (savedTier) {
+                const available = savedTier.quantity - (savedTier.sold || 0);
+
+                setSelectedTier(savedTier);
+                setQuantity(
+                  Math.min(purchase.quantity, Math.max(1, available)),
+                );
+
+                sessionStorage.removeItem("pendingPurchase");
+              } else if (firstAvailable) {
+                setSelectedTier(firstAvailable);
+              }
+            } else if (firstAvailable) {
+              setSelectedTier(firstAvailable);
+            }
+          } catch (err) {
+            console.error("Pogreška učitavanja kupovine", err);
+
+            if (firstAvailable) {
+              setSelectedTier(firstAvailable);
+            }
+          }
+        } else if (firstAvailable) {
+          setSelectedTier(firstAvailable);
+        }
 
         //check favourite
         if (user) {
@@ -159,6 +195,16 @@ export default function EventDetail() {
 
   async function handleBuyTicket() {
     if (!isLoggedIn) {
+      if (selectedTier) {
+        sessionStorage.setItem(
+          "pendingPurchase",
+          JSON.stringify({
+            eventId: id,
+            tierId: selectedTier.id,
+            quantity,
+          }),
+        );
+      }
       navigate("/login", { state: { from: `/events/${id}` } });
       return;
     }
