@@ -233,7 +233,13 @@ export default function Navbar() {
               </Link>
             </>
           )}
-          <button onClick={toggleTheme} className="btn-secondary text-sm mt-2">
+          <button
+            onClick={() => {
+              toggleTheme();
+              closeMenu();
+            }}
+            className="btn-secondary text-sm mt-2"
+          >
             {isDark ? "Svijetli način" : "Tamni način"}
           </button>
         </div>
