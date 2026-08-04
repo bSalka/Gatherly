@@ -72,19 +72,23 @@ export default function Home() {
   return (
     <div>
       {/*Hero section */}
-      <section
-        className="bg-linear-to-br from-blue-600 via-blue-700
-    to-indigo-800 text-white"
-      >
-        <div className="max-w-6xl mx-auto px-4 py-20 md:py-28">
-          <div className="max-w-2xl mx-auto text-center">
-            <span
-              className="inline-block bg-white/20 text-white text-xs
-                font-medium px-3 py-1 rounded-full mb-6 backdrop-blur-sm"
-            >
-              Otkrijte događaje u vašem gradu
-            </span>
+      <section className="relative overflow-hidden text-white">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
 
+        {/*Overlay */}
+        <div className="absolute inset-0 bg-black/50" />
+
+        {/*Content */}
+        <div className="relative z-10 max-w-6xl mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-2xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
               Pronađite savršen
               <span className="block text-blue-200">događaj za vas</span>
