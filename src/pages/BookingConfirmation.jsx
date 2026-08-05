@@ -134,8 +134,6 @@ export default function BookingConfirmation() {
   const emailSentRef = useRef(false);
 
   useEffect(() => {
-    /* emailSentRef.current = false; */
-
     async function fetchData() {
       try {
         const snap = await getDoc(doc(db, "bookings", bookingId));
