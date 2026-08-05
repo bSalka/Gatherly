@@ -580,7 +580,7 @@ export default function EventDetail() {
                 <div
                   className="bg-gray-50 dark:bg-gray-700 border-t
                    border-gray-100 dark:border-gray-700 px-5 py-3
-                  flex items-center justify-center gap-2"
+                  flex items-center justify-center rounded-b-xl rounded-t-none gap-2"
                 >
                   <svg
                     className="w-4 h-4 text-muted"

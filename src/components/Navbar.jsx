@@ -78,10 +78,7 @@ export default function Navbar() {
                 </span>
               </Link>
 
-              <button
-                onClick={handleLogout}
-                className="text-sm btn-secondary cursor-pointer"
-              >
+              <button onClick={handleLogout} className="text-sm btn-secondary ">
                 Odjavi se
               </button>
             </>
@@ -97,7 +94,7 @@ export default function Navbar() {
           )}
           <button
             onClick={toggleTheme}
-            className="btn-icon cursor-pointer"
+            className="btn-icon"
             title={isDark ? "Svijetli način" : "Tamni način"}
           >
             {isDark ? (
@@ -137,7 +134,7 @@ export default function Navbar() {
         {/*Mobile menu button*/}
 
         <button
-          className="md:hidden text-navbar cursor-pointer"
+          className="md:hidden text-navbar "
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? (
