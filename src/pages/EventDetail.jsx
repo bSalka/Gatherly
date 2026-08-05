@@ -382,7 +382,7 @@ export default function EventDetail() {
             {/*Right- ticket sidebar */}
 
             <div className="w-full lg:w-72 shrink-0">
-              <div className="card">
+              <div className="card overflow-hidden">
                 <div className="p-5">
                   <h3 className="font-semibold text-primary mb-1">
                     {tiers.length === 0 ? "Besplatan ulaz" : "Kupite kartu"}
@@ -580,7 +580,7 @@ export default function EventDetail() {
                 <div
                   className="bg-gray-50 dark:bg-gray-700 border-t
                    border-gray-100 dark:border-gray-700 px-5 py-3
-                  flex items-center justify-center rounded-b-xl rounded-t-none gap-2"
+                  flex items-center justify-center  gap-2"
                 >
                   <svg
                     className="w-4 h-4 text-muted"
