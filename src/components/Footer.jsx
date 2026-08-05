@@ -8,9 +8,12 @@ export default function Footer() {
     >
       <div className="max-w-6xl mx-auto flex flex-col px-6 py-12">
         <div className="flex flex-col items-center text-center">
-          <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+          <Link
+            to="/"
+            className="text-xl font-bold text-blue-600 dark:text-blue-400"
+          >
             Gatherly
-          </span>
+          </Link>
 
           <p className="text-sm text-secondary mt-3 leading-relaxed max-w-md">
             Otkrij događaje, rezerviši ulaznice i uživaj u najboljim iskustvima
