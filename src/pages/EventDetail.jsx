@@ -424,7 +424,7 @@ export default function EventDetail() {
                                 setBookingError("");
                               }
                             }}
-                            className={`w-full text-left border rounded-xl p-3 
+                            className={`w-full text-left border rounded-xl p-3 cursor-pointer
                          transition-all 
                              ${
                                soldOut
@@ -475,7 +475,7 @@ export default function EventDetail() {
                   {tiers.length > 0 && selectedTier && (
                     <div className="mb-4">
                       <label className="block text-xs text-muted mb-2">
-                        Količina
+                        Količina:
                       </label>
                       <div className="flex items-center gap-3">
                         <button
@@ -485,7 +485,7 @@ export default function EventDetail() {
                         dark:border-gray-600 flex items-center
                           justify-center text-secondary
                         hover:bg-gray-50 dark:hover:bg-gray-700
-                          font-medium transition-colors"
+                          font-medium transition-colors cursor-pointer"
                         >
                           -
                         </button>
@@ -503,7 +503,7 @@ export default function EventDetail() {
                         dark:border-gray-600 flex items-center
                           justify-center text-secondary
                         hover:bg-gray-50 dark:hover:bg-gray-700
-                          font-medium transition-colors"
+                          font-medium transition-colors cursor-pointer"
                         >
                           +
                         </button>
@@ -517,7 +517,7 @@ export default function EventDetail() {
                       className="flex items-center justify-between mb-4 py-3
                       border-t border-gray-100 dark:border-gray-700"
                     >
-                      <span className="text-sm text-primary">Ukupno</span>
+                      <span className="text-sm text-primary">Ukupno: </span>
                       <span className="text-lg font-bold text-primary">
                         {selectedTier.price * quantity} KM
                       </span>
@@ -621,7 +621,7 @@ export default function EventDetail() {
               disabled={favLoading}
               title={isFav ? "Ukloni iz omiljenih" : "Dodaj u omiljene"}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl
-                    text-sm font-medium border transition-colors disabled:opacity-50
+                    text-sm font-medium border transition-colors disabled:opacity-50 cursor-pointer
                     ${
                       isFav
                         ? "bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-700 text-red-500 dark:text-white dark:hover:bg-red-800"
@@ -653,7 +653,7 @@ export default function EventDetail() {
               text-sm font-medium border border-gray-300
             dark:border-gray-600 bg-white dark:bg-gray-800
             text-gray-600 dark:text-gray-300 hover:bg-gray-50
-            dark:hover:bg-gray-700 transition-colors"
+            dark:hover:bg-gray-700 transition-colors cursor-pointer"
             >
               <svg
                 className="w-4 h-4"
