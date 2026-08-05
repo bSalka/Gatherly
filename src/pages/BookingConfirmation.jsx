@@ -134,7 +134,7 @@ export default function BookingConfirmation() {
   const emailSentRef = useRef(false);
 
   useEffect(() => {
-    emailSentRef.current = false;
+    /* emailSentRef.current = false; */
 
     async function fetchData() {
       try {
@@ -146,15 +146,17 @@ export default function BookingConfirmation() {
           const ticketData = await getBookingTickets(bookingId);
           setTickets(ticketData);
 
-          if (!emailSentRef.current) emailSentRef.current = true;
-          try {
-            await sendBookingConfirmation({
-              booking: bookingData,
-              tickets: ticketData,
-            });
-            console.log("Email sent!");
-          } catch (emailErr) {
-            console.error("Email failed:", emailErr);
+          if (!emailSentRef.current) {
+            emailSentRef.current = true;
+            try {
+              await sendBookingConfirmation({
+                booking: bookingData,
+                tickets: ticketData,
+              });
+              console.log("Email sent!");
+            } catch (emailErr) {
+              console.error("Email failed:", emailErr.status, emailErr.text);
+            }
           }
         }
       } catch (err) {

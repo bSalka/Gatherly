@@ -49,7 +49,7 @@ export async function sendBookingConfirmation({ booking, tickets }) {
           : "—",
     booking_id: booking.id,
     ticket_count: tickets.length,
-    tickets_ids: tickets
+    ticket_ids: tickets
       .map((t) => `Karta ${t.ticketNumber} : ${t.id}`)
       .join("\n"),
   };
