@@ -13,6 +13,7 @@ export default function Navbar() {
   const { isDark, toggleTheme } = useTheme();
 
   async function handleLogout() {
+    closeMenu();
     await logout();
     navigate("/");
   }
