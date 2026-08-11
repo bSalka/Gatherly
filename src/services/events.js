@@ -266,7 +266,6 @@ export async function createBooking({ user, event, tier, quantity }) {
         tierId: tier.id,
         tierName: tier.name,
         tierPrice: tier.price,
-        tierPrice: tier.price,
         status: "active",
         ticketNumber: i + 1,
         totalTickets: quantity,

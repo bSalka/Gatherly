@@ -230,7 +230,6 @@ export default function Signup() {
                 </div>
 
                 {/*Password hints*/}
-
                 {form.password && (
                   <div className="mt-2 space-y-1">
                     <div
@@ -240,7 +239,6 @@ export default function Signup() {
                           : "text-gray-400"
                       }`}
                     >
-                      {" "}
                       <span>{form.password.length >= 6 ? "✓" : "○"}</span>
                       Najmanje 6 karaktera
                     </div>
@@ -365,7 +363,7 @@ export default function Signup() {
 
             {/*Footer link */}
             <p className="text-center text-sm text-muted mt-6">
-              Imate račun?
+              Imate račun?{" "}
               <Link
                 to="/login"
                 className="text-blue-600 hover:underline font-medium"
