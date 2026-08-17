@@ -178,7 +178,6 @@ export default function Events() {
       {/*Empty state */}
       {!loading && !error && events.length === 0 && (
         <div className="text-center py-16">
-          <div className="text-5xl mb-4">🔍</div>
           <h3 className="text-lg font-semibold text-primary mb-2">
             Nema događaja
           </h3>
