@@ -553,7 +553,6 @@ export default function Organizer() {
           className="text-center py-16 bg-white dark:bg-gray-800 border border-gray-200
         dark:border-gray-700 rounded-2xl"
         >
-          <div className="text-5xl mb-3">📭</div>
           <h3 className="text-primary font-semibold mb-1">Nemate događaja </h3>
           <p className="text-secondary text-sm mb-4">
             Kreirajte vaš prvi događaj
